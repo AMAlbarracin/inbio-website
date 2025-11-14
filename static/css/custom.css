@@ -1,0 +1,228 @@
+/* Variables de Diseño Bioingeniería */
+:root {
+    --primary-color: #0a192f;    /* Azul oscuro profesional */
+    --secondary-color: #64ffda;  /* Verde neón bio */
+    --accent-color: #ff6b6b;     /* Rojo para destacados */
+    --text-color: #e6f1ff;
+    --bg-gradient: linear-gradient(135deg, #0a192f 0%, #172a45 100%);
+}
+
+/* Tipografía */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap');
+
+body {
+    font-family: 'Inter', sans-serif;
+    background: var(--bg-gradient);
+    color: var(--text-color);
+    min-height: 100vh;
+}
+
+/* Navbar Animación */
+.navbar {
+    backdrop-filter: blur(10px);
+    background: rgba(10, 25, 47, 0.9) !important;
+    transition: all 0.3s ease;
+}
+
+.navbar.scrolled {
+    padding: 10px 0;
+    box-shadow: 0 2px 20px rgba(0,0,0,0.3);
+}
+
+/* Hero Section */
+.hero-section {
+    height: 100vh;
+    background: url('../images/hero-bg.jpg') center/cover;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+
+.hero-section::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: rgba(10, 25, 47, 0.7);
+    z-index: 1;
+}
+
+.hero-content {
+    position: relative;
+    z-index: 2;
+    text-align: center;
+    animation: fadeInUp 1s ease;
+}
+
+@keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.hero-title {
+    font-size: 3.5rem;
+    font-weight: 700;
+    background: linear-gradient(90deg, var(--secondary-color), #4ecdc4);
+    
+    /* Propiedad estándar */
+    background-clip: text;
+    
+    /* Compatibilidad con navegadores WebKit */
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+
+    margin-bottom: 1rem;
+}
+
+
+.hero-section video {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    z-index: 0;
+}
+
+/* Cards Modernas */
+.card-bio {
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(100,255,218,0.2);
+    border-radius: 15px;
+    padding: 2rem;
+    backdrop-filter: blur(10px);
+    transition: all 0.3s ease;
+    height: 100%;
+}
+
+.card-bio:hover {
+    transform: translateY(-10px);
+    border-color: var(--secondary-color);
+    box-shadow: 0 10px 30px rgba(100,255,218,0.3);
+}
+
+/* Timeline */
+.timeline {
+    position: relative;
+    padding-left: 2rem;
+}
+
+.timeline::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0;
+    height: 100%;
+    width: 3px;
+    background: var(--secondary-color);
+}
+
+.timeline-item {
+    margin-bottom: 2rem;
+    padding-left: 2rem;
+    position: relative;
+}
+
+.timeline-item::before {
+    content: '';
+    position: absolute;
+    left: -8px; top: 5px;
+    width: 15px; height: 15px;
+    background: var(--secondary-color);
+    border-radius: 50%;
+    border: 3px solid var(--primary-color);
+}
+
+/* Grid de Equipo */
+.team-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 2rem;
+}
+
+.team-card {
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+    border-radius: 15px;
+}
+
+.team-card img {
+    width: 150px;
+    height: 150px;
+    object-fit: cover;
+    border-radius: 50%;
+    border: 4px solid var(--secondary-color);
+    transition: all 0.3s ease;
+}
+
+.team-card:hover img {
+    transform: scale(1.1);
+    box-shadow: 0 0 20px var(--secondary-color);
+}
+
+/* Botones */
+.btn-bio {
+    background: linear-gradient(90deg, var(--secondary-color), #4ecdc4);
+    color: var(--primary-color);
+    font-weight: 600;
+    padding: 12px 30px;
+    border: none;
+    border-radius: 30px;
+    text-decoration: none;
+    display: inline-block;
+    transition: all 0.3s ease;
+}
+
+.btn-bio:hover {
+    transform: scale(1.05);
+    box-shadow: 0 5px 20px rgba(100,255,218,0.4);
+    color: var(--primary-color);
+}
+
+/* Animaciones Scroll */
+.fade-in {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: all 0.6s ease;
+}
+
+.fade-in.visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .hero-title {
+        font-size: 2.5rem;
+    }
+    
+    .timeline {
+        padding-left: 1rem;
+    }
+}
+
+/* Ajustes de navbar */
+.navbar-nav .nav-link {
+    padding: 8px 15px !important;
+}
+
+.dropdown-menu {
+    font-size: 0.9rem;
+}
+
+/* Ajustes de cards en secciones */
+.card-bio {
+    margin-bottom: 2rem;
+}
+
+/* Responsive */
+@media (max-width: 992px) {
+    .navbar-nav .dropdown-menu {
+        border: none;
+        background: rgba(255,255,255,0.05);
+    }
+}

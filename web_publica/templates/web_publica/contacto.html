@@ -1,0 +1,75 @@
+{% extends 'web_publica/base_publica.html' %}
+{% load crispy_forms_tags %}
+{% load static %}
+
+{% block title %}Contacto - Instituto de Bioingeniería{% endblock %}
+
+{% block content %}
+<section class="py-5">
+    <div class="container">
+        <h1 class="text-center mb-5 fade-in">Contacto</h1>
+        
+        <div class="row justify-content-center">
+            <div class="col-lg-8 fade-in">
+                <div class="card-bio p-4">
+                    <h4>Envíanos tu consulta</h4>
+                    <p class="text-muted">Responderemos a la brevedad</p>
+                    
+                    {% if messages %}
+                        {% for message in messages %}
+                            <div class="alert alert-{{ message.tags }} alert-dismissible fade show">
+                                {{ message }}
+                                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                    
+                    <form method="post">
+                        {% csrf_token %}
+                        {{ form|crispy }}
+                        <button type="submit" class="btn-bio w-100 mt-3">
+                            <i class="fas fa-paper-plane me-2"></i>Enviar Mensaje
+                        </button>
+                    </form>
+                </div>
+            </div>
+            
+            <div class="col-lg-4 fade-in">
+                <div class="card-bio p-4 h-100">
+                    <h5>Información de Contacto</h5>
+                    <hr>
+                    <p><i class="fas fa-map-marker-alt text-primary me-2"></i>Av. Universidad 1234, Ciudad</p>
+                    <p><i class="fas fa-phone text-primary me-2"></i>+54 11 4321-5678</p>
+                    <p><i class="fas fa-envelope text-primary me-2"></i>contacto@instituto.edu</p>
+                    
+                    <h6 class="mt-4">Horarios de atención</h6>
+                    <ul class="list-unstyled text-muted">
+                        <li>Lunes a Viernes: 9:00 - 18:00</li>
+                        <li>Sábados: 9:00 - 13:00</li>
+                    </ul>
+                    
+                    <h6 class="mt-4">Ubicación</h6>
+                    <div id="map" style="height: 200px; background: #f0f0f0; border-radius: 10px;"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Inicializar mapa (coordenadas del instituto)
+        const map = L.map('map').setView([-34.6037, -58.3816], 15); // Buenos Aires ejemplo
+        
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '© OpenStreetMap contributors'
+        }).addTo(map);
+        
+        L.marker([-34.6037, -58.3816]).addTo(map)
+            .bindPopup('Instituto de Bioingeniería')
+            .openPopup();
+    });
+</script>
+{% endblock %}

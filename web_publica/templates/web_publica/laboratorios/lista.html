@@ -1,0 +1,28 @@
+<!-- templates/web_publica/laboratorios/lista.html -->
+{% extends 'web_publica/base_publica.html' %}
+{% block content %}
+<section class="py-5">
+    <div class="container">
+        <h1 class="text-center mb-5">Laboratorios</h1>
+        <div class="row">
+            {% for lab in laboratorios %}
+            <div class="col-md-4 fade-in">
+                <div class="card-bio">
+                    {% if lab.imagen %}
+                    <img src="{{ lab.imagen.url }}" class="card-img-top" alt="{{ lab.nombre }}">
+                    {% endif %}
+                    <div class="card-body">
+                        <h5>{{ lab.nombre }}</h5>
+                        <p>{{ lab.descripcion|truncatewords:20 }}</p>
+                        <small class="text-muted">Capacidad: {{ lab.capacidad }} personas</small>
+                        <br><br>
+                        <a href="#" class="btn-bio btn-sm">Ver disponibilidad</a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endblock %}
+

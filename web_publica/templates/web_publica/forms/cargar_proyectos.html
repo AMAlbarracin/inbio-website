@@ -1,0 +1,30 @@
+{% extends 'web_publica/base_publica.html' %}
+{% load crispy_forms_tags static %}
+
+{% block title %}Cargar Proyecto - INBIO{% endblock %}
+
+{% block content %}
+<section class="py-5">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="card-bio p-4">
+                    <h2 class="text-center mb-4">
+                        <i class="fas fa-clipboard-check text-primary"></i><br>
+                        Cargar Nuevo Proyecto
+                    </h2>
+                    
+                    <form method="post">
+                        {% csrf_token %}
+                        {{ form|crispy }}
+                        
+                        <button type="submit" class="btn-bio w-100 mt-4">
+                            <i class="fas fa-save me-2"></i>Guardar Proyecto
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

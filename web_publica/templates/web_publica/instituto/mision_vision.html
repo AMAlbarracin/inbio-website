@@ -1,0 +1,56 @@
+{% extends 'web_publica/base_publica.html' %}
+{% block content %}
+<section class="py-5">
+    <div class="container">
+        <!-- Misión y Visión -->
+        <div class="row mb-5">
+            {% if mision %}
+            <div class="col-md-6 fade-in">
+                <div class="card-bio text-center h-100">
+                    <i class="fas fa-bullseye fa-3x text-primary mb-3"></i>
+                    <h2>{{ mision.titulo }}</h2>
+                    <p>{{ mision.descripcion }}</p>
+                </div>
+            </div>
+            {% endif %}
+            
+            {% if vision %}
+            <div class="col-md-6 fade-in">
+                <div class="card-bio text-center h-100">
+                    <i class="fas fa-eye fa-3x text-primary mb-3"></i>
+                    <h2>{{ vision.titulo }}</h2>
+                    <p>{{ vision.descripcion }}</p>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Valores -->
+        <h2 class="text-center mb-4 fade-in">Valores</h2>
+        <div class="row">
+            {% for valor in valores %}
+            <div class="col-md-4 fade-in">
+                <div class="card-bio text-center mb-4">
+                    <i class="fas {{ valor.icono }} fa-2x text-primary mb-3"></i>
+                    <h4>{{ valor.titulo }}</h4>
+                    <p>{{ valor.descripcion }}</p>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        <!-- Objetivos -->
+        <h2 class="text-center mb-4 mt-5 fade-in">Objetivos Estratégicos</h2>
+        <div class="row">
+            {% for objetivo in objetivos %}
+            <div class="col-md-6 fade-in">
+                <div class="card-bio mb-3">
+                    <h5><i class="fas fa-check-circle text-primary me-2"></i>{{ objetivo.titulo }}</h5>
+                    <p>{{ objetivo.descripcion }}</p>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endblock %}

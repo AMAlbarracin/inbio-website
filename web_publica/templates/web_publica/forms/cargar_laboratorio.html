@@ -1,0 +1,29 @@
+{% extends 'web_publica/base_publica.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}Cargar Laboratorio - Instituto de Bioingeniería{% endblock %}
+
+{% block content %}
+<section class="py-5">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="card-bio p-4">
+                    <h2 class="mb-4">
+                        <i class="fas fa-flask text-primary"></i> 
+                        Cargar Laboratorio
+                    </h2>
+                    
+                    <form method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        {{ form|crispy }}
+                        <button type="submit" class="btn-bio w-100 mt-3">
+                            <i class="fas fa-save me-2"></i>Guardar Laboratorio
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

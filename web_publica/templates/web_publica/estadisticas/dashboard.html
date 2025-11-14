@@ -1,0 +1,119 @@
+{% extends 'web_publica/base_publica.html' %}
+{% load static %}
+
+{% block title %}Estadísticas - Instituto de Bioingeniería{% endblock %}
+
+{% block extra_css %}
+<style>
+    .chart-container {
+        position: relative;
+        height: 300px;
+        margin-bottom: 2rem;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="py-5">
+    <div class="container">
+        <h1 class="text-center mb-5 fade-in">Dashboard Estadístico</h1>
+        
+        <!-- Cards de totales -->
+        <div class="row mb-5">
+            <div class="col-md-3 fade-in">
+                <div class="card-bio text-center">
+                    <i class="fas fa-users fa-3x text-primary mb-3"></i>
+                    <h2>{{ total_investigadores }}</h2>
+                    <p>Investigadores Activos</p>
+                </div>
+            </div>
+            <div class="col-md-3 fade-in">
+                <div class="card-bio text-center">
+                    <i class="fas fa-newspaper fa-3x text-primary mb-3"></i>
+                    <h2>{{ total_publicaciones }}</h2>
+                    <p>Publicaciones</p>
+                </div>
+            </div>
+            <div class="col-md-3 fade-in">
+                <div class="card-bio text-center">
+                    <i class="fas fa-flask fa-3x text-primary mb-3"></i>
+                    <h2>{{ total_laboratorios }}</h2>
+                    <p>Laboratorios</p>
+                </div>
+            </div>
+            <div class="col-md-3 fade-in">
+                <div class="card-bio text-center">
+                    <i class="fas fa-handshake fa-3x text-primary mb-3"></i>
+                    <h2>15</h2>
+                    <p>Convenios Activos</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Gráficos -->
+        <div class="row">
+            <div class="col-lg-6 fade-in">
+                <div class="card-bio p-4">
+                    <h4>Publicaciones por Año</h4>
+                    <div class="chart-container">
+                        <canvas id="publicacionesChart"></canvas>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6 fade-in">
+                <div class="card-bio p-4">
+                    <h4>Reservas por Mes</h4>
+                    <div class="chart-container">
+                        <canvas id="reservasChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Gráfico de publicaciones
+    const publicacionesCtx = document.getElementById('publicacionesChart').getContext('2d');
+    const publicacionesData = {
+        labels: [{% for item in publicaciones_por_año %}'{{ item.año }}',{% endfor %}],
+        datasets: [{
+            label: 'Publicaciones',
+            data: [{% for item in publicaciones_por_año %}{{ item.total }},{% endfor %}],
+            backgroundColor: 'rgba(100, 255, 218, 0.5)',
+            borderColor: '#64ffda',
+            borderWidth: 2
+        }]
+    };
+    
+    new Chart(publicacionesCtx, {
+        type: 'bar',
+        data: publicacionesData,
+        options: { responsive: true, maintainAspectRatio: false }
+    });
+    
+    // Gráfico de reservas
+    const reservasCtx = document.getElementById('reservasChart').getContext('2d');
+    const reservasData = {
+        labels: ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun'],
+        datasets: [{
+            label: 'Reservas',
+            data: [12, 19, 3, 5, 2, 3],  // Datos de ejemplo
+            backgroundColor: 'rgba(231, 76, 60, 0.5)',
+            borderColor: '#e74c3c',
+            borderWidth: 2
+        }]
+    };
+    
+    new Chart(reservasCtx, {
+        type: 'line',
+        data: reservasData,
+        options: { responsive: true, maintainAspectRatio: false }
+    });
+});
+</script>
+{% endblock %}

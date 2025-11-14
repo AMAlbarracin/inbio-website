@@ -1,0 +1,27 @@
+# Python
+*.pyc
+__pycache__/
+*.py[cod]
+
+# Django
+*.log
+*.pot
+db.sqlite3
+media/
+staticfiles/
+.DS_Store
+
+# Entorno virtual
+.env
+.venv
+env/
+venv/
+ENV/
+
+# IDE
+.vscode/
+.idea/
+
+# Seguridad
+*.key
+*.pem

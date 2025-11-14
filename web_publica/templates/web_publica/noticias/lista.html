@@ -1,0 +1,49 @@
+{% extends 'web_publica/base_publica.html' %}
+{% block content %}
+<section class="py-5">
+    <div class="container">
+        <h1 class="text-center mb-5 fade-in">Noticias y Eventos</h1>
+        
+        <!-- Filtros -->
+        <div class="row mb-4">
+            <div class="col-md-12 text-center fade-in">
+                <div class="btn-group">
+                    <a href="{% url 'web_publica:noticias' %}" class="btn btn-outline-primary {% if not categoria_actual %}active{% endif %}">Todas</a>
+                    {% for codigo, nombre in Noticia.CATEGORIA_CHOICES %}  <!-- ✅ CORREGIDO -->
+                    <a href="?categoria={{ codigo }}" class="btn btn-outline-primary {% if categoria_actual == codigo %}active{% endif %}">{{ nombre }}</a>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+        
+        <!-- Grid de noticias -->
+        <div class="row">
+            {% if noticias %}  <!-- ✅ Verifica que hay noticias -->
+                {% for noticia in noticias %}
+                <div class="col-md-4 fade-in">
+                    <div class="card-bio h-100">
+                        {% if noticia.imagen %}
+                        <img src="{{ noticia.imagen.url }}" class="card-img-top" alt="{{ noticia.titulo }}">
+                        {% endif %}
+                        <div class="card-body">
+                            <span class="badge bg-info">{{ noticia.get_categoria_display }}</span>
+                            <small class="text-muted d-block mb-2">{{ noticia.fecha_publicacion|date:"d M Y" }}</small>
+                            <h5>{{ noticia.titulo }}</h5>
+                            <p>{{ noticia.resumen|truncatewords:20 }}</p>
+                            <a href="{% url 'web_publica:noticia_detalle' noticia.pk %}" class="btn-bio btn-sm">
+                                Leer más <i class="fas fa-arrow-right ms-1"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            {% else %}  <!-- ✅ Mensaje si no hay noticias -->
+                <div class="col-12 text-center">
+                    <h4 class="text-muted">No hay noticias registradas aún.</h4>
+                    <a href="/admin/web_publica/noticia/add/" class="btn-bio mt-3">Crear primera noticia</a>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</section>
+{% endblock %}

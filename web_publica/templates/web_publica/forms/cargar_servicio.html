@@ -1,0 +1,43 @@
+{% extends 'web_publica/base_publica.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}Cargar Servicos - Instituto de Bioingeniería{% endblock %}
+
+{% block content %}
+<section class="py-5">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-10">
+                <div class="card-bio p-4">
+                    <h2 class="mb-4">
+                        <i class="fas fa-handshake text-primary"></i> 
+                        Cargar Servicios - Transferencias
+                    </h2>
+                    
+                    {% if messages %}
+                        {% for message in messages %}
+                            <div class="alert alert-{{ message.tags }} alert-dismissible fade show">
+                                {{ message }}
+                                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                    
+                    <form method="post">
+                        {% csrf_token %}
+                        {{ form|crispy }}
+                        <button type="submit" class="btn-bio w-100 mt-3">
+                            <i class="fas fa-upload me-2"></i>Publicar
+                        </button>
+                    </form>
+                    
+                    <hr class="my-4">
+                    <a href="{% url 'web_publica:publicaciones' %}" class="btn btn-outline-light btn-sm">
+                        <i class="fas fa-arrow-left me-2"></i>Volver a Publicaciones
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

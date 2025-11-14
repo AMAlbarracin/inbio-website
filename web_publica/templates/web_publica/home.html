@@ -1,0 +1,181 @@
+{% extends 'web_publica/base_publica.html' %}
+{% load static %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero-section">
+    <video autoplay muted loop>
+        <source src="{% static 'videos/lab-loop.mp4' %}" type="video/mp4">
+    </video>
+    <div class="hero-content">
+        <h1 class="hero-title">Instituto de Bioingeniería</h1>
+        <p class="lead mb-4">Innovación en tecnologías de salud | Investigación de frontera | Formación de excelencia</p>
+        <a href="{% url 'web_publica:mision_vision' %}" class="btn-bio">Conoce más <i class="fas fa-arrow-right ms-2"></i></a>
+    </div>
+    
+    <!-- Animación de partículas -->
+    <canvas id="particles-canvas"></canvas>
+</section>
+
+<!-- Contadores -->
+<section class="py-5">
+    <div class="container">
+        <div class="row text-center">
+            <div class="col-md-3 fade-in">
+                <h2 class="text-primary display-4" data-count="{{ contadores.proyectos }}">0</h2>
+                <p class="text-light">Proyectos Activos</p>
+            </div>
+            <div class="col-md-3 fade-in">
+                <h2 class="text-primary display-4" data-count="{{ contadores.publicaciones }}">0</h2>
+                <p class="text-light">Publicaciones 2024</p>
+            </div>
+            <div class="col-md-3 fade-in">
+                <h2 class="text-primary display-4" data-count="{{ contadores.investigadores }}">0</h2>
+                <p class="text-light">Investigadores</p>
+            </div>
+            <div class="col-md-3 fade-in">
+                <h2 class="text-primary display-4">15</h2>
+                <p class="text-light">Años de Trayectoria</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Fechas Destacadas -->
+<section class="py-5">
+    <div class="container">
+        <h2 class="text-center mb-5 fade-in">Momentos Clave</h2>
+        <div class="row">
+            {% for fecha in fechas_destacadas %}
+            <div class="col-md-6 fade-in">
+                <div class="card-bio">
+                    <span class="badge bg-primary">{{ fecha.fecha|date:"Y" }}</span>
+                    <h4 class="mt-2">{{ fecha.titulo }}</h4>
+                    <p>{{ fecha.descripcion|truncatewords:20 }}</p>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<!-- Equipo Destacado -->
+<section class="py-5" style="background: rgba(255,255,255,0.02);">
+    <div class="container">
+        <h2 class="text-center mb-5 fade-in">Nuestra Directiva</h2>
+        <div class="row">
+            {% for miembro in miembros_directiva %}
+            <div class="col-md-6 fade-in">
+                <div class="card-bio text-center">
+                    <img src="{{ miembro.foto.url }}" alt="{{ miembro.nombre_completo }}" class="mb-3">
+                    <h4>{{ miembro.nombre_completo }}</h4>
+                    <p class="text-muted">{{ miembro.cargo }}</p>
+                    <a href="mailto:{{ miembro.email }}" class="btn-bio btn-sm">Contactar</a>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<!-- En templates/web_publica/home.html, antes del footer -->
+<section class="py-5" style="background: rgba(255,255,255,0.02);">
+    <div class="container">
+        <h2 class="text-center mb-5 fade-in">Últimas Noticias</h2>
+        <div class="row">
+            {% for noticia in destacadas %}
+            <div class="col-md-4 fade-in">
+                <div class="card-bio text-center h-100">
+                    <img src="{% if noticia.imagen %}{{ noticia.imagen.url }}{% else %}{% static 'images/default.jpg' %}{% endif %}" class="card-img-top" alt="{{ noticia.titulo }}">
+                    <div class="card-body">
+                        <h5>{{ noticia.titulo }}</h5>
+                        <p>{{ noticia.resumen|truncatewords:15 }}</p>
+                        <a href="{% url 'web_publica:noticia_detalle' noticia.pk %}" class="btn-bio btn-sm">Ver más</a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        <div class="text-center mt-4 fade-in">
+            <a href="{% url 'web_publica:noticias' %}" class="btn-bio">
+                Ver todas las noticias <i class="fas fa-arrow-right ms-2"></i>
+            </a>
+        </div>
+    </div>
+</section>
+
+<!-- ACCESO RÁPIDO A FUNCIONES PRIVADAS -->
+{% if request.user.is_authenticated %}
+<section class="py-5" style="background: linear-gradient(135deg, #0a192f 0%, #172a45 100%);">
+    <div class="container">
+        <h2 class="text-center mb-5 fade-in">
+            <i class="fas fa-user-lock text-primary"></i> Mi Área Privada
+        </h2>
+        <div class="row text-center">
+            <div class="col-md-4 fade-in">
+                <a href="{% url 'web_publica:dashboard' %}" class="card-bio text-decoration-none d-block h-100">
+                    <i class="fas fa-tachometer-alt fa-3x text-primary mb-3"></i>
+                    <h4>Dashboard</h4>
+                    <p class="text-muted">Reservas y publicaciones</p>
+                </a>
+            </div>
+            <div class="col-md-4 fade-in">
+                <a href="{% url 'web_publica:reserva_calendario' %}" class="card-bio text-decoration-none d-block h-100">
+                    <i class="fas fa-calendar-plus fa-3x text-primary mb-3"></i>
+                    <h4>Reservar Laboratorio</h4>
+                    <p class="text-muted">Calendario interactivo</p>
+                </a>
+            </div>
+            <div class="col-md-4 fade-in">
+                <a href="{% url 'web_publica:estadisticas' %}" class="card-bio text-decoration-none d-block h-100">
+                    <i class="fas fa-chart-bar fa-3x text-warning mb-3"></i>
+                    <h4>Estadísticas</h4>
+                    <p class="text-muted">Reportes institucionales</p>
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+{% else %}
+<!-- CTA PARA INICIAR SESIÓN -->
+<section class="py-5">
+    <div class="container text-center">
+        <h2 class="fade-in">¿Eres miembro del instituto?</h2>
+        <p class="fade-in">Accede a funciones exclusivas</p>
+        <a href="{% url 'web_publica:login' %}" class="btn-bio btn-lg fade-in">
+            <i class="fas fa-user-lock me-2"></i>Iniciar Sesión
+        </a>
+    </div>
+</section>
+{% endif %}
+
+<script type="module" src="{% static 'js/hero-animation.js' %}"></script>
+<script>
+// Animación de contadores
+document.addEventListener('DOMContentLoaded', function() {
+    const counters = document.querySelectorAll('[data-count]');
+    counters.forEach(counter => {
+        const target = parseInt(counter.getAttribute('data-count'));
+        const duration = 2000;
+        const step = target / (duration / 16);
+        let current = 0;
+        
+        const timer = setInterval(() => {
+            current += step;
+            if (current >= target) {
+                counter.textContent = target;
+                clearInterval(timer);
+            } else {
+                counter.textContent = Math.floor(current);
+            }
+        }, 16);
+    });
+    
+    // Partículas básicas
+    const canvas = document.getElementById('particles-canvas');
+    if (canvas) {
+        // Implementar con particles.js o similar
+    }
+});
+</script>
+{% endblock %}

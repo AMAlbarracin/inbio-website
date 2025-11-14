@@ -1,0 +1,126 @@
+{% extends 'web_publica/base_publica.html' %}
+{% load static %}
+
+{% block title %}Reservar Laboratorio - Instituto de Bioingeniería{% endblock %}
+
+{% block extra_css %}
+<link href='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.css' rel='stylesheet' />
+<style>
+    #calendar {
+        max-width: 1200px;
+        margin: 0 auto;
+        background: rgba(255,255,255,0.05);
+        padding: 1rem;
+        border-radius: 15px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="py-5">
+    <div class="container">
+        <h1 class="text-center mb-5 fade-in">Reserva de Laboratorios</h1>
+        
+        <!-- Selector de laboratorio -->
+        <div class="row mb-4 fade-in">
+            <div class="col-md-12 text-center">
+                <label class="me-2">Laboratorio:</label>
+                <select id="laboratorioSelect" class="form-select d-inline-block w-auto">
+                    <option value="">Selecciona un laboratorio</option>
+                    {% for lab in laboratorios %}
+                    <option value="{{ lab.id }}">{{ lab.nombre }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+        
+        <!-- Calendario -->
+        <div class="fade-in">
+            <div id='calendar'></div>
+        </div>
+        
+        <!-- Instrucciones -->
+        <div class="row mt-4">
+            <div class="col-md-12 text-center">
+                <small class="text-muted">
+                    Haz clic en una fecha para crear una reserva. Requiere aprobación del administrador.
+                </small>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js'></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    var calendarEl = document.getElementById('calendar');
+    var calendar = new FullCalendar.Calendar(calendarEl, {
+        initialView: 'dayGridMonth',
+        locale: 'es',
+        themeSystem: 'bootstrap5',
+        headerToolbar: {
+            left: 'prev,next today',
+            center: 'title',
+            right: 'dayGridMonth,timeGridWeek,timeGridDay'
+        },
+        events: '/reserva-api/',  // URL de eventos
+        
+        selectable: true,
+        select: function(info) {
+            var laboratorioId = document.getElementById('laboratorioSelect').value;
+            if (!laboratorioId) {
+                alert('Selecciona un laboratorio primero');
+                return;
+            }
+            
+            var title = prompt('Motivo de la reserva:');
+            if (title) {
+                // Enviar reserva
+                fetch('/reserva-api/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': '{{ csrf_token }}'
+                    },
+                    body: JSON.stringify({
+                        laboratorio_id: laboratorioId,
+                        fecha: info.startStr.split('T')[0],
+                        hora_inicio: info.startStr.split('T')[1].substring(0,5),
+                        hora_fin: info.endStr.split('T')[1].substring(0,5),
+                        descripcion: title
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'ok') {
+                        calendar.refetchEvents();
+                        alert('Reserva solicitada. Espera aprobación.');
+                    } else {
+                        alert('Error: ' + data.message);
+                    }
+                });
+            }
+        },
+        
+        eventClick: function(info) {
+            var reservaId = info.event.id;
+            if (confirm('¿Eliminar esta reserva?')) {
+                fetch('/reserva-api/' + reservaId + '/', {
+                    method: 'DELETE',
+                    headers: {
+                        'X-CSRFToken': '{{ csrf_token }}'
+                    }
+                })
+                .then(() => {
+                    calendar.refetchEvents();
+                });
+            }
+        }
+    });
+    
+    calendar.render();
+});
+</script>
+{% endblock %}
