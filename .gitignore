@@ -25,3 +25,8 @@ ENV/
 # Seguridad
 *.key
 *.pem
+
+# Videos grandes
+*.mp4
+*.mov
+*.avi
