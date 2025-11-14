@@ -25,7 +25,25 @@
                     
                     <form method="post" enctype="multipart/form-data">
                         {% csrf_token %}
-                        {{ form|crispy }}
+                        
+                        <!-- Campos normales del formulario -->
+                        {{ form.titulo|as_crispy_field }}
+                        {{ form.fecha_noticia|as_crispy_field }}
+                        {{ form.resumen|as_crispy_field }}
+                        {{ form.contenido|as_crispy_field }}
+                        {{ form.imagen|as_crispy_field }}
+                        {{ form.categoria|as_crispy_field }}
+                        {{ form.destacada|as_crispy_field }}
+                        
+                        <!-- Campo personalizado para múltiples imágenes adicionales -->
+                        <div class="mb-3">
+                            <label class="form-label">Imágenes adicionales</label>
+                            <input type="file" name="imagenes_adicionales" class="form-control" multiple>
+                            <small class="form-text text-muted">
+                                Mantén presionada la tecla <strong>Ctrl</strong> (o <strong>Cmd</strong> en Mac) para seleccionar varias imágenes
+                            </small>
+                        </div>
+                        
                         <button type="submit" class="btn-bio w-100 mt-3">
                             <i class="fas fa-upload me-2"></i>Publicar Noticia
                         </button>
@@ -40,4 +58,5 @@
         </div>
     </div>
 </section>
+
 {% endblock %}

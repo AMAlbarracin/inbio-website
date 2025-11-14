@@ -17,7 +17,7 @@ class ValorInstitucionalAdmin(admin.ModelAdmin):
 
 @admin.register(Investigador)
 class InvestigadorAdmin(admin.ModelAdmin):
-    list_display = ('foto_thumbnail', 'nombre_completo', 'categoria', 'cargo', 'activo', 'orden')
+    list_display = ('foto_thumbnail', 'nombre_completo', 'categoria', 'titulo_Academico', 'activo', 'orden')
     list_filter = ('categoria', 'activo', 'linea_investigacion')
     search_fields = ('nombre', 'apellido', 'email')
     list_editable = ('activo', 'orden')

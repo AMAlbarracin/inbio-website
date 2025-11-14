@@ -17,7 +17,7 @@ class Command(BaseCommand):
                 'nombre': 'Juan',
                 'apellido': 'García López',
                 'categoria': 'DIRECTOR',
-                'cargo': 'Director del Instituto',
+                'titulo_Academico': 'Director del Instituto',
                 'email': 'j.garcia@instituto.edu',
                 'linea_investigacion': 'Biomateriales y Regeneración Tisular',
                 'orcid_id': '0000-0002-1825-0097',

@@ -57,7 +57,7 @@
                                 <i class="fas fa-bullseye me-2"></i>Misión y Visión
                             </a></li>
                             <li><a class="dropdown-item" href="{% url 'web_publica:equipo' %}">
-                                <i class="fas fa-users me-2"></i>Equipo Directivo
+                                <i class="fas fa-users me-2"></i>Nuestro Equipo
                             </a></li>
                             <li><hr class="dropdown-divider"></li>
                             <li><a class="dropdown-item" href="{% url 'web_publica:noticias' %}">
@@ -79,7 +79,7 @@
                                 <i class="fas fa-flask me-2"></i>Proyectos
                             </a></li>
                             <li><a class="dropdown-item" href="{% url 'web_publica:laboratorios' %}">
-                                <i class="fas fa-lab me-2"></i>Laboratorios
+                                <i class="fas fa-flask-gear m-2"></i>Laboratorios
                             </a></li>
                         </ul>
                     </li>
@@ -191,34 +191,56 @@
         {% block content %}{% endblock %}
     </main>
 
+    <!-- 🔵 LOGOS (3 juntos en fila) -->
+    <div class="container logo-block">
+        <div class="d-flex justify-content-between align-items-center flex-wrap w-100 logo-row">
+            <img src="{% static 'img/logoinbio.png' %}" alt="logoinbio" style="height:130px;">
+            <img src="{% static 'img/logoingfi.jpeg' %}" alt="logoingfi" style="height:60px;">
+            <img src="{% static 'img/logounsj.jpeg' %}" alt="logounsj" style="height:60px;">
+        </div>
+    </div>
+    
     <!-- Footer -->
     <footer class="footer bg-dark text-light py-5">
         <div class="container">
             <div class="row">
                 <div class="col-lg-3">
                     <h5 class="text-primary">Instituto de Bioingeniería</h5>
-                    <p>Facultad de Ingeniería<br>Universidad [Nombre]</p>
+                    <p>Facultad de Ingeniería<br>UNSJ - Universidad Nacional de San Juan </p>
                 </div>
+                <!-- 🔵 ÍCONOS REDES SOCIALES -->
                 <div class="col-lg-2">
                     <h6>Enlaces</h6>
                     <ul class="list-unstyled">
-                        <li><a href="{% url 'web_publica:historia' %}" class="text-light text-decoration-none">Historia</a></li>
-                        <li><a href="{% url 'web_publica:mision_vision' %}" class="text-light text-decoration-none">Misión</a></li>
-                    </ul>
+                        <li><a href="https://facebook.com" target="_blank" class="text-light me-3 fs-4"><i class="fab fa-facebook"></i></a></li>
+                        <li><a href="https://instagram.com" target="_blank" class="text-light me-3 fs-4"><i class="fab fa-instagram"></i></a></li>
+                        <li><a href="https://www.linkedin.com" target="_blank" class="text-light me-3 fs-4"><i class="fab fa-linkedin"></i></a></li>
+                        <li><a href="https://youtube.com" target="_blank" class="text-light fs-4"><i class="fab fa-youtube"></i></a></li>                    
+                    </ul>                 
                 </div>
                 <div class="col-lg-3">
                     <h6>Contacto</h6>
-                    <p><i class="fas fa-map-marker-alt me-2"></i>Av. Universidad 1234<br>Ciudad, CP 12345</p>
-                    <p><i class="fas fa-phone me-2"></i>+54 11 4321-5678</p>
+                    <p><i class="fas fa-map-marker-alt me-2"></i>Av. Libertador Gral. San Martín Oste 1109, Primer Piso del Departamento de Electrónica y Automática<br> San Juan - Argentina, CP 5400, J5400ARL</p>
+                    <p><i class="fas fa-phone me-2"></i>+54 264 421-1700 Interno 313</p>
                 </div>
                 <div class="col-lg-4">
-                    <h6>Ubicación</h6>
-                    <div id="map" style="height: 150px; background: #333;"></div>
+                    <h6>Ubicación</h6>                    
+                    <div style="width: 100%; height: 150px; overflow: hidden; border-radius: 6px;">
+                        <iframe 
+                            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3400.652575563549!2d-68.54448769999999!3d-31.533700800000005!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x9681403474a2d269%3A0xed2e8f0149c8f2c4!2sFacultad%20de%20Ingenier%C3%ADa%20UNSJ!5e0!3m2!1ses-419!2sar!4v1763136772835!5m2!1ses-419!2sar" 
+                            width="100%" 
+                            height="150" 
+                            style="border:0;" 
+                            allowfullscreen="" 
+                            loading="lazy" 
+                            referrerpolicy="no-referrer-when-downgrade">
+                        </iframe>
+                    </div>
                 </div>
             </div>
             <hr>
             <div class="text-center">
-                <p>&copy; 2024 Instituto de Bioingeniería. Todos los derechos reservados.</p>
+                <p>&copy; 2025 Instituto de Bioingeniería. Todos los derechos reservados.</p>
             </div>
         </div>
     </footer>

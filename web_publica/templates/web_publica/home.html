@@ -62,14 +62,14 @@
 <!-- Equipo Destacado -->
 <section class="py-5" style="background: rgba(255,255,255,0.02);">
     <div class="container">
-        <h2 class="text-center mb-5 fade-in">Nuestra Directiva</h2>
+        <h2 class="text-center mb-5 fade-in">Autoridades</h2>
         <div class="row">
             {% for miembro in miembros_directiva %}
             <div class="col-md-6 fade-in">
                 <div class="card-bio text-center">
                     <img src="{{ miembro.foto.url }}" alt="{{ miembro.nombre_completo }}" class="mb-3">
                     <h4>{{ miembro.nombre_completo }}</h4>
-                    <p class="text-muted">{{ miembro.cargo }}</p>
+                    <p class="text-muted">{{ miembro.titulo_Academico }}</p>
                     <a href="mailto:{{ miembro.email }}" class="btn-bio btn-sm">Contactar</a>
                 </div>
             </div>

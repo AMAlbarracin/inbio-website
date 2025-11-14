@@ -2,7 +2,7 @@
 {% block content %}
 <section class="py-5">
     <div class="container">
-        <h1 class="text-center mb-5 fade-in">Noticias y Eventos</h1>
+        <h1 class="text-center mb-5 fade-in">Noticias</h1>
         
         <!-- Filtros -->
         <div class="row mb-4">
@@ -27,7 +27,7 @@
                         {% endif %}
                         <div class="card-body">
                             <span class="badge bg-info">{{ noticia.get_categoria_display }}</span>
-                            <small class="text-muted d-block mb-2">{{ noticia.fecha_publicacion|date:"d M Y" }}</small>
+                            <small class="text-muted d-block mb-2">{{ noticia.fecha_noticia|date:"d M Y" }}</small>
                             <h5>{{ noticia.titulo }}</h5>
                             <p>{{ noticia.resumen|truncatewords:20 }}</p>
                             <a href="{% url 'web_publica:noticia_detalle' noticia.pk %}" class="btn-bio btn-sm">

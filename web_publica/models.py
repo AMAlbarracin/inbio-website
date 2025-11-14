@@ -40,27 +40,27 @@ class Investigador(models.Model):
     CATEGORIA_CHOICES = [
         ('DIRECTOR', 'Director'),
         ('SUBDIRECTOR', 'Subdirector'),
-        ('INVESTIGADOR_S', 'Investigador Senior'),
-        ('INVESTIGADOR_J', 'Investigador Junior'),
+        ('INVESTIGADOR', 'Investigador'),
+        ('DOCENTE', 'Docente'),
         ('BECARIO', 'Becario'),
-        ('ADMIN', 'Personal Administrativo'),
+        ('ADMIN/TEC', 'Administrativo / Tecnico'),
     ]
     
     nombre = models.CharField(max_length=100)
     apellido = models.CharField(max_length=100)
     categoria = models.CharField(max_length=30, choices=CATEGORIA_CHOICES)
     foto = models.ImageField(upload_to='equipo/', blank=True, default='default.jpg')
-    cargo = models.CharField(max_length=200)
+    titulo_Academico = models.CharField(max_length=200)
     email = models.EmailField()
     telefono = models.CharField(max_length=20, blank=True, validators=[
         RegexValidator(regex=r'^\+?1?\d{9,15}$', message="Formato inválido")
     ])
-    biografia = models.TextField()
-    linea_investigacion = models.CharField(max_length=200)
-    orcid_id = models.CharField(max_length=50, blank=True)
-    google_scholar = models.URLField(blank=True)
-    linkedin = models.URLField(blank=True)
-    publicaciones_destacadas = models.TextField(help_text="Una por línea", blank=True)
+    biografia = models.TextField(blank=True, null=True)
+    linea_investigacion = models.CharField(max_length=200, blank=True, null=True)
+    orcid_id = models.CharField(max_length=50, blank=True, null=True)
+    google_scholar = models.URLField(blank=True, null=True)
+    linkedin = models.URLField(blank=True, null=True)
+    publicaciones_destacadas = models.TextField(help_text="Una por línea", blank=True, null=True)
     activo = models.BooleanField(default=True)
     orden = models.IntegerField(default=0)
     
@@ -121,12 +121,12 @@ class Publicacion(models.Model):
 class Noticia(models.Model):
     # ✅ DEFINIMOS CATEGORIA_CHOICES como atributo de clase
     CATEGORIA_CHOICES = [
-        ('NOTICIA', 'Noticia'),
-        ('EVENTO', 'Evento'),
+        ('NOTICIA', 'Noticia'),        
         ('PRENSA', 'Nota de Prensa'),
     ]
     
     titulo = models.CharField(max_length=200)
+    fecha_noticia = models.DateField(null=True, blank=True)
     resumen = models.TextField()
     contenido = models.TextField()
     imagen = models.ImageField(upload_to='noticias/', blank=True)
@@ -136,8 +136,8 @@ class Noticia(models.Model):
     activa = models.BooleanField(default=True)
     
     class Meta:
-        ordering = ['-fecha_publicacion']
-        verbose_name_plural = "Noticias y Eventos"
+        ordering = ['-fecha_noticia']
+        verbose_name_plural = "Noticias"
     
     def __str__(self):
         return self.titulo
@@ -146,6 +146,9 @@ class Noticia(models.Model):
         """Método para mostrar el nombre legible de la categoría"""
         return dict(self.CATEGORIA_CHOICES).get(self.categoria, '')
     
+class NoticiaImagen(models.Model):
+    noticia = models.ForeignKey(Noticia, on_delete=models.CASCADE, related_name='imagenes')
+    imagen = models.ImageField(upload_to='noticias/')
 
 
     

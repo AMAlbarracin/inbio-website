@@ -37,6 +37,50 @@
             <i class="fas fa-tools me-3"></i>Panel de Control de Cargas
         </h1>
 
+        <!-- BARRA DE BÚSQUEDA (COPIA ESTA VERSIÓN EXACTA) -->
+        <div class="row mb-4">
+            <div class="col-md-8 mx-auto">
+                <form method="get" action="{% url 'web_publica:cargas_web' %}" class="d-flex">
+                    <input type="text" name="q" class="form-control form-control-lg me-2" 
+                           placeholder="🔍 Buscar noticias, publicaciones, investigadores..."
+                           value="{{ query|default:'' }}">
+                    <button type="submit" class="btn btn-primary btn-lg">
+                        <i class="fas fa-search"></i> Buscar
+                    </button>
+                    {% if query %}
+                    <a href="{% url 'web_publica:cargas_web' %}" class="btn btn-secondary btn-lg ms-2">
+                        <i class="fas fa-times"></i> Limpiar
+                    </a>
+                    {% endif %}
+                </form>
+            </div>
+        </div>
+
+        <!-- INDICADOR DE BÚSQUEDA ACTIVA (ESTO ES LO QUE TE FALTA) -->
+        {% if query %}
+        <div class="search-active">
+            <div class="container">
+                <div class="d-flex align-items-center justify-content-between">
+                    <div>
+                        <h4 class="mb-0 text-primary"><i class="fas fa-search"></i> Búsqueda Activa</h4>
+                        <p class="mb-0 mt-2">
+                            Término: <strong>"{{ query }}"</strong> | 
+                            <span class="badge bg-primary">{{ contadores.noticias }} Noticias</span>
+                            <span class="badge bg-success">{{ contadores.publicaciones }} Publicaciones</span>
+                            <span class="badge bg-info">{{ contadores.investigadores }} Investigadores</span>
+                            <span class="badge bg-warning">{{ contadores.eventos }} Eventos</span>
+                        </p>
+                    </div>
+                    <div>
+                        <a href="{% url 'web_publica:cargas_web' %}" class="btn btn-sm btn-outline-secondary">
+                            <i class="fas fa-times"></i> Limpiar búsqueda
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
         <!-- DASHBOARD DE CONTADORES -->
         <div class="row g-4 mb-5">
             <div class="col-lg-2 col-md-4 col-sm-6">
@@ -125,7 +169,15 @@
                             </td>
                         </tr>
                         {% empty %}
-                        <tr><td colspan="4" class="text-center">No hay noticias cargadas</td></tr>
+                        <tr>
+                            <td colspan="4" class="text-center text-muted py-4">
+                                {% if query %}
+                                    <i class="fas fa-search"></i> No hay noticias que coincidan con <strong>"{{ query }}"</strong>
+                                {% else %}
+                                    No hay noticias cargadas
+                                {% endif %}
+                            </td>
+                        </tr>
                         {% endfor %}
                     </tbody>
                 </table>
@@ -268,6 +320,132 @@
             </div>
         </div>
 
+        <!-- EVENTOS -->
+        <div class="card-bio mb-5">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h4 class="mb-0"><i class="fas fa-calendar-alt text-primary me-2"></i>Eventos</h4>
+                <a href="{% url 'web_publica:cargar_evento' %}" class="btn-bio btn-bio-sm">
+                    <i class="fas fa-plus me-1"></i>Nuevo
+                </a>
+            </div>
+            <div class="card-body p-0">
+                <table class="table table-hover mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Título</th>
+                            <th>Fecha</th>
+                            <th>Lugar</th>
+                            <th style="width: 120px;">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for evento in eventos %}
+                        <tr>
+                            <td>{{ evento.titulo|truncatechars:50 }}</td>
+                            <td>{{ evento.fecha_evento|date:"d/m/Y H:i" }}</td>
+                            <td>{{ evento.lugar|truncatechars:30 }}</td>
+                            <td>
+                                <a href="{% url 'web_publica:editar_evento' evento.pk %}" class="btn btn-primary btn-action">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                                <a href="{% url 'web_publica:eliminar_evento' evento.pk %}" class="btn btn-danger btn-action">
+                                    <i class="fas fa-trash"></i>
+                                </a>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr><td colspan="4" class="text-center">No hay eventos cargados</td></tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- SERVICIOS -->
+        <div class="card-bio mb-5">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h4 class="mb-0"><i class="fas fa-cogs text-primary me-2"></i>Servicios</h4>
+                <a href="{% url 'web_publica:cargar_servicio' %}" class="btn-bio btn-bio-sm">
+                    <i class="fas fa-plus me-1"></i>Nuevo
+                </a>
+            </div>
+            <div class="card-body p-0">
+                <table class="table table-hover mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Nombre</th>
+                            <th>Precio desde</th>
+                            <th style="width: 120px;">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for servicio in servicios %}
+                        <tr>
+                            <td>{{ servicio.nombre|truncatechars:50 }}</td>
+                            <td>${{ servicio.precio_desde|default:"Consultar" }}</td>
+                            <td>
+                                <a href="{% url 'web_publica:editar_servicio' servicio.pk %}" class="btn btn-primary btn-action">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                                <a href="{% url 'web_publica:eliminar_servicio' servicio.pk %}" class="btn btn-danger btn-action">
+                                    <i class="fas fa-trash"></i>
+                                </a>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr><td colspan="3" class="text-center">No hay servicios cargados</td></tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- LABORATORIOS -->
+        <div class="card-bio mb-5">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h4 class="mb-0"><i class="fas fa-flask text-primary me-2"></i>Laboratorios</h4>
+                <a href="{% url 'web_publica:cargar_laboratorio' %}" class="btn-bio btn-bio-sm">
+                    <i class="fas fa-plus me-1"></i>Nuevo
+                </a>
+            </div>
+            <div class="card-body p-0">
+                <table class="table table-hover mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Nombre</th>
+                            <th>Capacidad</th>
+                            <th>Activo</th>
+                            <th style="width: 120px;">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for lab in laboratorios %}
+                        <tr>
+                            <td>{{ lab.nombre|truncatechars:50 }}</td>
+                            <td>{{ lab.capacidad }} personas</td>
+                            <td>
+                                {% if lab.activo %}
+                                    <span class="badge bg-success">Sí</span>
+                                {% else %}
+                                    <span class="badge bg-secondary">No</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <a href="{% url 'web_publica:editar_laboratorio' lab.pk %}" class="btn btn-primary btn-action">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                                <a href="{% url 'web_publica:eliminar_laboratorio' lab.pk %}" class="btn btn-danger btn-action">
+                                    <i class="fas fa-trash"></i>
+                                </a>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr><td colspan="4" class="text-center">No hay laboratorios cargados</td></tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
         
 
     </div>

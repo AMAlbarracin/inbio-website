@@ -269,6 +269,12 @@ def cargar_noticia_view(request):
         form = NoticiaForm(request.POST, request.FILES)
         if form.is_valid():
             noticia = form.save()
+            
+            # Guardar múltiples imágenes
+            imagenes = request.FILES.getlist('imagenes_adicionales')
+            for img in imagenes:
+                NoticiaImagen.objects.create(noticia=noticia, imagen=img)
+                
             messages.success(request, f'Noticia "{noticia.titulo}" creada exitosamente')
             return redirect('web_publica:noticias')
     else:
@@ -411,6 +417,17 @@ from django.core.paginator import Paginator
 def cargas_web_view(request):
     """Panel de control centralizado para gestionar TODAS las entidades"""
     
+    query = request.GET.get('q', '').strip()
+    
+    # ===== 2. DEBUG (temporal para verificar, puedes quitarlo después) =====
+    if query:
+        print(f"\n{'='*50}")
+        print(f"🔍 BÚSQUEDA ACTIVA: '{query}'")
+        print(f"URL: {request.get_full_path()}")
+        print(f"{'='*50}\n")
+    # =======================================================================
+    
+    
     # Dashboard de contadores
     contadores = {
         'noticias': Noticia.objects.count(),
@@ -447,6 +464,29 @@ def cargas_web_view(request):
     proyectos_qs = Proyecto.objects.filter(activo=True).order_by('-fecha_inicio')
     proyectos = Paginator(proyectos_qs, 5).get_page(page_number)
     
+    # ===== 5. APLICAR FILTROS SOLO SI HAY BÚSQUEDA (NUEVO) =====
+    if query:
+        noticias_qs = noticias_qs.filter(Q(titulo__icontains=query) | Q(resumen__icontains=query))
+        publicaciones_qs = publicaciones_qs.filter(Q(titulo__icontains=query) | Q(autores__icontains=query))
+        investigadores_qs = investigadores_qs.filter(
+            Q(nombre__icontains=query) | Q(apellido__icontains=query) | Q(titulo_Academico__icontains=query)
+        )
+        eventos_qs = eventos_qs.filter(Q(titulo__icontains=query) | Q(descripcion__icontains=query))
+        servicios_qs = servicios_qs.filter(Q(nombre__icontains=query) | Q(descripcion__icontains=query))
+        laboratorios_qs = laboratorios_qs.filter(Q(nombre__icontains=query) | Q(descripcion__icontains=query))
+        proyectos_qs = proyectos_qs.filter(titulo__icontains=query)
+        
+        # Actualizar contadores para reflejar resultados filtrados
+        contadores.update({
+            'noticias': noticias_qs.count(),
+            'publicaciones': publicaciones_qs.count(),
+            'investigadores': investigadores_qs.count(),
+            'eventos': eventos_qs.count(),
+            'servicios': servicios_qs.count(),
+            'laboratorios': laboratorios_qs.count(),
+            'proyectos': proyectos_qs.count(),
+        })
+        
     context = {
         'contadores': contadores,
         'noticias': noticias,

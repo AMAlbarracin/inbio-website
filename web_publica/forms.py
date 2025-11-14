@@ -16,11 +16,17 @@ class ContactoForm(forms.ModelForm):
 
 
 class NoticiaForm(forms.ModelForm):
+    imagenes_adicionales = forms.FileField(
+        required=False,
+        widget=forms.FileInput(),  # ✅ SIN multiple=True
+        label="Imágenes adicionales"
+    )
     class Meta:
         model = Noticia
-        fields = ['titulo', 'resumen', 'contenido', 'imagen', 'categoria', 'destacada']
+        fields = ['titulo', 'fecha_noticia', 'resumen', 'contenido', 'imagen', 'categoria', 'destacada']
         widgets = {
             'titulo': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Título de la noticia'}),
+            'fecha_noticia': forms.DateTimeInput(attrs={'class': 'form-control', 'placeholder': 'YYYY-MM-DD HH:MM'}),
             'resumen': forms.Textarea(attrs={'class': 'form-control', 'rows': 3, 'placeholder': 'Resumen corto'}),
             'contenido': forms.Textarea(attrs={'class': 'form-control', 'rows': 10, 'placeholder': 'Contenido completo'}),
             'imagen': forms.FileInput(attrs={'class': 'form-control'}),
@@ -87,7 +93,7 @@ class ServicioForm(forms.ModelForm):
 class InvestigadorForm(forms.ModelForm):
     class Meta:
         model = Investigador
-        fields = ['nombre', 'apellido', 'categoria', 'foto', 'cargo', 'email', 
+        fields = ['nombre', 'apellido', 'categoria', 'foto', 'titulo_Academico', 'email', 
                   'telefono', 'biografia', 'linea_investigacion', 'orcid_id', 
                   'google_scholar', 'linkedin', 'publicaciones_destacadas', 
                   'activo', 'orden']
@@ -96,7 +102,7 @@ class InvestigadorForm(forms.ModelForm):
             'apellido': forms.TextInput(attrs={'class': 'form-control'}),
             'categoria': forms.Select(attrs={'class': 'form-select'}),
             'foto': forms.FileInput(attrs={'class': 'form-control'}),
-            'cargo': forms.TextInput(attrs={'class': 'form-control'}),
+            'titulo_Academico': forms.TextInput(attrs={'class': 'form-control'}),
             'email': forms.EmailInput(attrs={'class': 'form-control'}),
             'telefono': forms.TextInput(attrs={'class': 'form-control'}),
             'biografia': forms.Textarea(attrs={'class': 'form-control', 'rows': 4}),
@@ -108,6 +114,16 @@ class InvestigadorForm(forms.ModelForm):
             'activo': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
             'orden': forms.NumberInput(attrs={'class': 'form-control'}),
         }
+        
+    # 🔽 Hace NO obligatorios los campos indicados
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        opcionales = [
+            'biografia', 'linea_investigacion', 'orcid_id', 'google_scholar',
+            'linkedin', 'publicaciones_destacadas'
+        ]
+        for campo in opcionales:
+            self.fields[campo].required = False
         
         
         

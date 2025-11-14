@@ -1,0 +1,68 @@
+{% extends 'web_publica/base_publica.html' %}
+{% load static %}
+
+{% block content %}
+<section class="py-5">
+    <div class="container fade-in">
+
+        <!-- Título -->
+        <h1 class="mb-3 text-center">{{ noticia.titulo }}</h1>
+
+        <!-- Fecha y categoría -->
+        <div class="text-center mb-4">
+            <span class="badge bg-primary px-3 py-2">{{ noticia.get_categoria_display }}</span>
+            <small class="text-muted ms-2">
+                {{ noticia.fecha_noticia|date:"d M Y" }}
+            </small>
+        </div>
+
+        <!-- Carrusel de imágenes -->
+        {% if noticia.imagen or noticia.imagenes.all %}
+        <div id="galeriaNoticia" class="carousel slide mb-4" data-bs-ride="carousel">
+            
+            <div class="carousel-inner">
+
+                {% if noticia.imagen %}
+                <div class="carousel-item active">
+                    <img src="{{ noticia.imagen.url }}" class="d-block w-100 rounded" alt="{{ noticia.titulo }}">
+                </div>
+                {% endif %}
+
+                {% for img in noticia.imagenes.all %}
+                <div class="carousel-item {% if not noticia.imagen and forloop.first %}active{% endif %}">
+                    <img src="{{ img.imagen.url }}" class="d-block w-100 rounded" alt="Imagen adicional">
+                </div>
+                {% endfor %}
+
+            </div>
+
+            <!-- Controles si hay más de una foto -->
+            {% if noticia.imagenes.count > 0 %}
+            <button class="carousel-control-prev" type="button" data-bs-target="#galeriaNoticia" data-bs-slide="prev">
+                <span class="carousel-control-prev-icon"></span>
+            </button>
+            <button class="carousel-control-next" type="button" data-bs-target="#galeriaNoticia" data-bs-slide="next">
+                <span class="carousel-control-next-icon"></span>
+            </button>
+            {% endif %}
+
+        </div>
+        {% endif %}
+
+        <!-- Contenido completo -->
+        <article class="mt-4">
+            <p style="font-size: 1.1rem; line-height: 1.7;">
+                {{ noticia.contenido|linebreaks }}
+            </p>
+        </article>
+
+        <!-- Botón para volver -->
+        <div class="text-center mt-5">
+            <a href="{% url 'web_publica:noticias' %}" class="btn btn-secondary">
+                ← Volver a Noticias
+            </a>
+        </div>
+
+    </div>
+</section>
+{% endblock %}
