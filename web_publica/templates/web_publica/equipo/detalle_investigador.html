@@ -1,8 +1,462 @@
 {% extends 'web_publica/base_publica.html' %}
 {% block content %}
-<section class="py-5">
-    <div class="container">
-        <!-- Perfil individual del investigador -->
+
+<style>
+/* ------------------------------------------------------ */
+/* 🔥 ESTILOS MODERNOS DEL PERFIL DE INVESTIGADOR */
+/* ------------------------------------------------------ */
+
+/* TARJETA IZQUIERDA */
+.card-perfil {
+    background: linear-gradient(135deg, var(--primary-color) 0%, #1e3a5f 100%);
+    border: 1px solid rgba(255,255,255,0.15);
+    backdrop-filter: 16px;
+    border-radius: 20px;
+    padding: 2rem;
+    text-align: center;  
+    text-white: white;
+    color: white;  
+    transition: var(--transition);
+    position: relative;
+    overflow: hidden;
+    margin-top: 25px;  /* separación respecto al hero */
+}
+
+.card-perfil img {
+    width: 160px;
+    height: 160px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 4px solid white;
+    margin-bottom: 15px;
+}
+
+.social-icons a {
+    margin: 0 5px;
+    color: white;
+    font-size: 1.6rem;
+    transition: 0.3s ease;
+}
+.social-icons a:hover {
+    color: var(--primary-color);
+}
+
+/* ----------------------------- */
+/*  TARJETA INSTITUCIONAL  */
+/* ----------------------------- */
+
+.card-institucional {
+    background: linear-gradient(135deg, var(--primary-color) 0%, #1e3a5f 100%);
+    border: 1px solid rgba(255,255,255,0.15);
+    backdrop-filter: 16px;
+    border-radius: 20px;
+    padding: 2rem;
+    margin-top: 25px;  /* separación respecto a la tarjeta anterior */    
+    text-align: center;  
+    text-white: white;
+    color: white;  
+    transition: var(--transition);
+    position: relative;
+    overflow: hidden;
+}
+
+.card-institucional .card-header {
+    border-radius: 15px;
+}
+
+.card-institucional label,
+.card-institucional li,
+.card-institucional p {
+    color: white !important;
+    text-align: left;
+}
+
+.card-institucional ul {
+    padding-left: 18px;
+}
+
+.card-institucional h5 {
+    font-weight: 700;
+}
+
+/* Encabezado blanco para tarjeta institucional */
+.institucional-header {
+    background: rgba(255,255,255,0.85);
+    border-radius: 15px;
+    padding: 12px 10px;
+}
+
+.institucional-header h5 {
+    color: #000 !important;
+    font-weight: 700;
+    margin: 0;
+    text-align: center;
+}
+
+
+/* ------------------------------------------------------ */
+/* 🔥 ESTÉTICA MODERNA PARA EL BLOQUE DE PRODUCCIÓN */
+/* ------------------------------------------------------ */
+
+/* Contenedor principal */
+.info-box-production {
+    background: white;
+    padding: 25px;
+    border-radius: 22px;
+    margin-bottom: 20px;
+    box-shadow: 0 4px 18px rgba(0,0,0,0.1);
+}
+
+/* Título */
+.info-box-production h4 {
+    font-weight: 700;
+    margin-bottom: 18px;
+    color: #070707ff !important; /* azul oscuro moderno */
+}
+
+.info-box-production p {
+    color: #333333ff;
+    line-height: 1.6;
+}
+
+/* ---------------- */
+/* PESTAÑAS (TABS) */
+/* ---------------- */
+
+.tab-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 18px;
+}
+
+.tab-button {
+    border: none;
+    padding: 8px 16px;
+    border-radius: 12px;
+    font-weight: 500;
+    font-size: 0.95rem;
+    cursor: pointer;
+
+    background: #e6e8ef;          /* gris claro pero visible */
+    color: #0d1b3f;                /* texto azul oscuro */
+    transition: all .25s ease;
+}
+
+.tab-button:hover {
+    background: #d0d4e0;
+}
+
+.tab-button.active {
+    background: #1a3fa0;          /* azul moderno */
+    color: white !important;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(26,63,160,0.35);
+}
+
+/* ------------------------- */
+/* CONTENIDO DE CADA PESTAÑA */
+/* ------------------------- */
+
+.tab-content {
+    display: none;
+    opacity: 0;
+    transition: opacity .35s ease;
+    
+    /* Scroll interno */
+    max-height: 350px; 
+    overflow-y: auto;
+    padding-right: 10px;
+}
+
+/* visible con animación */
+.tab-content.active {
+    display: block;
+    opacity: 1;
+}
+
+/* Estilo de los ítems */
+.list-item {
+    padding: 10px 0;
+    border-bottom: 1px solid #ddd;
+}
+.list-item:last-child {
+    border-bottom: none;
+}
+
+/* Scroll bonito */
+.tab-content::-webkit-scrollbar {
+    width: 8px;
+}
+.tab-content::-webkit-scrollbar-thumb {
+    background: #7388b8;
+    border-radius: 10px;
+}
+.tab-content::-webkit-scrollbar-track {
+    background: #eef0f6;
+}
+
+</style>
+
+
+
+<!-- ------------------------------------------------------ -->
+<!-- 🔥 HERO SUPERIOR -->
+<!-- ------------------------------------------------------ -->
+<section class="hero-section">
+    <!-- Imagen de fondo del hero -->
+        <img src="/static/img/hero_inbio.jpg" class="hero-bg-img" alt="Imagen de fondo INBIO">    
+    <div class="hero-content">        
+        <h1 class="hero-title fw-bold">{{ investigador.nombre_completo }}</h1>
+        <p class="hero-subtitle lead mb-0">{{ investigador.titulo_Academico }}</p>
+
+        {% if investigador.linea_investigacion %}
+            <p class="hero-subtitle fst-italic mt-2 opacity-75">{{ investigador.linea_investigacion }}</p>
+        {% endif %}        
     </div>
-</section>
+</section>    
+
+
+<div class="container">
+    <div class="row g-4">
+
+        <!-- TARJETA IZQUIERDA -->
+        <div class="col-lg-4">
+            <div class="card-perfil">
+                <img src="{{ investigador.foto.url }}" alt="">
+                <h3>{{ investigador.nombre_completo }}</h3>
+                <p class="opacity-75">{{ investigador.categoria }}</p>
+
+                <div class="social-icons">
+                    {% if investigador.orcid_id %}
+                        <a href="https://orcid.org/{{ investigador.orcid_id }}" target="_blank">
+                            <i class="fab fa-orcid"></i>
+                        </a>
+                    {% endif %}
+                    {% if investigador.google_scholar %}
+                        <a href="{{ investigador.google_scholar }}" target="_blank">
+                            <i class="fas fa-graduation-cap"></i>
+                        </a>
+                    {% endif %}
+                    {% if investigador.linkedin %}
+                        <a href="{{ investigador.linkedin }}" target="_blank">
+                            <i class="fab fa-linkedin"></i>
+                        </a>
+                    {% endif %}
+                    <a href="mailto:{{ investigador.email }}">
+                        <i class="fas fa-envelope"></i>
+                    </a>
+                </div>
+
+                <hr class="text-light my-3">
+
+                <p><strong>Email:</strong> {{ investigador.email }}</p>
+                {% if investigador.telefono %}
+                    <p><strong>Teléfono:</strong> {{ investigador.telefono }}</p>
+                {% endif %}
+            </div>
+
+            <!-- TARJETA INSTITUCIONAL -->
+            {% if laboratorios_a_cargo or laboratorios_integrante or proyectos.all %}
+            <div class="card-institucional">
+            
+                <div class="card-header institucional-header text-center">
+                    <h5 class="mb-0">Participación Institucional</h5>
+                </div>
+
+                <div class="card-body">
+
+                    <!-- Laboratorios a cargo -->
+                    {% if laboratorios_a_cargo %}
+                    <div class="mb-3">
+                        <p class="fw-bold mb-1">Laboratorios que dirige:</p>
+                        <ul>
+                            {% for lab in laboratorios_a_cargo %}
+                                <li>
+                                    <strong>{{ lab.nombre }}</strong><br>
+                                    {{ lab.descripcion|truncatewords:20 }}<br>
+                                    <a href="{% url 'web_publica:laboratorio_detalle' lab.id %}">Ver laboratorio</a>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                    {% endif %}
+
+                    <!-- Laboratorios donde participa -->
+                    {% if laboratorios_integrante %}
+                    <div class="mb-3">
+                        <p class="fw-bold mb-1">Laboratorios donde participa:</p>
+                        <ul>
+                            {% for lab in laboratorios_integrante %}
+                                <li>
+                                    <strong>{{ lab.nombre }}</strong><br>
+                                    {{ lab.descripcion|truncatewords:20 }}<br>
+                                    <a href="{% url 'web_publica:laboratorio_detalle' lab.id %}">Ver laboratorio</a>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                    {% endif %}
+
+                    <!-- Proyectos donde es responsable -->
+                    {% if proyectos.all %}
+                    <div class="mb-3">
+                        <p class="fw-bold mb-1">Proyectos donde es responsable:</p>
+                        <ul>
+                            {% for proyecto in proyectos.all %}
+                                <li>{{ proyecto.titulo }}</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                    {% endif %}                
+
+                </div>
+            </div>
+            {%endif%}
+
+        </div>
+
+        
+
+        <!-- COLUMNA DERECHA -->
+        <div class="col-lg-8">
+
+            <!-- BIO -->
+            <div class="info-box-production">
+                <h4>Biografía</h4>
+                <p>{{ investigador.biografia|default:"Sin biografía disponible." }}</p>
+            </div>
+
+            
+            <!-- TABS -->
+            <div class="info-box">
+                <h4>Producción del Investigador</h4>
+
+                <!-- Botones -->
+                <div class="tab-buttons">
+                    {% if publicaciones %}
+                    <button class="tab-button active" data-tab="pubs">Publicaciones</button>
+                    {%endif%}
+                    {% if proyectos %}
+                    <button class="tab-button" data-tab="proyectos">Proyectos</button>
+                    {%endif%}
+                    {% if colaboraciones %}
+                    <button class="tab-button" data-tab="colab">Colaboraciones</button>
+                    {%endif%}                    
+                    {% if premios %}
+                    <button class="tab-button" data-tab="premios">Premios</button>
+                    {%endif%}
+                    {% if desarrollo_tecnoligico %}
+                    <button class="tab-button" data-tab="tecnica">Desarrollo Técnologico</button>
+                    {%endif%}
+                </div>
+
+                <!-- Contenido: PUBLICACIONES -->
+                {% if publicaciones %}
+                <div class="tab-content active" id="pubs">                    
+                    {% for pub in publicaciones %}
+                        <div class="list-item">
+                            <strong>{{ pub.titulo }}</strong>
+
+                            {% if pub.autores %}
+                                <br><span class="text-muted">Autores: {{ pub.autores }}</span>
+                            {% endif %}
+
+                            {% if pub.revista %}
+                                <br><span class="text-muted">Revista: {{ pub.revista }}</span>
+                            {% endif %}
+
+                            {% if pub.año %}
+                                <br><span class="text-muted">Año: {{ pub.año }}</span>
+                            {% endif %}
+
+                            <div class="mt-1">
+                                <small class="text-secondary">
+                                    Fuente: {{ pub.fuente|capfirst }}
+                                </small>
+
+                                {% if pub.link %}
+                                    &nbsp;|&nbsp;
+                                    <a href="{{ pub.link }}" target="_blank" rel="noopener">
+                                        Ver publicación
+                                    </a>
+                                {% endif %}
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+                {% endif %}
+
+                <!-- PROYECTOS -->
+                {% if investigador.proyectos %}
+                <div class="tab-content" id="proyectos">                    
+                    <p>{{ investigador.proyectos|linebreaks }}</p>
+                </div>
+                {% endif %}
+
+                <!-- COLABORACIONES -->
+                {% if investigador.colaboraciones %}
+                <div class="tab-content" id="colab">                
+                    <p>{{ investigador.colaboraciones|linebreaks }}</p>                
+                </div>
+                {% endif %}
+
+                <!-- PREMIOS -->
+                {% if investigador.premios %} 
+                <div class="tab-content" id="premios">                    
+                    <p>{{ investigador.premios|linebreaks }}</p>                    
+                </div>
+                {% endif %}
+
+                <!-- PRODUCCIÓN TÉCNICA -->
+                {% if investigador.desarrollo_tecnologico %}
+                <div class="tab-content" id="tecnica">                    
+                    <p>{{ investigador.desarrollo_tecnologico|linebreaks }}</p>                    
+                </div>
+                {% endif%}
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<!-- ------------------------------------------------------ -->
+<!-- 🔥 JAVASCRIPT PARA LOS TABS -->
+<!-- ------------------------------------------------------ -->
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+    const buttons = document.querySelectorAll(".tab-button");
+    const contents = document.querySelectorAll(".tab-content");
+
+    buttons.forEach(btn => {
+        btn.addEventListener("click", () => {
+
+            // Cambiar pestaña activa
+            buttons.forEach(b => b.classList.remove("active"));
+            btn.classList.add("active");
+
+            // Mostrar contenido correcto
+            const tabId = btn.dataset.tab;
+
+            contents.forEach(c => {
+                if (c.id === tabId) {
+                    c.classList.add("active");
+                } else {
+                    c.classList.remove("active");
+                }
+            });
+
+            // Animación suave (fade-in)
+            const activeContent = document.getElementById(tabId);
+            activeContent.style.opacity = 0;
+            setTimeout(() => { activeContent.style.opacity = 1; }, 50);
+
+        });
+    });
+
+});
+</script>
+
 {% endblock %}

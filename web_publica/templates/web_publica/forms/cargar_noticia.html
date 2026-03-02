@@ -1,62 +1,221 @@
 {% extends 'web_publica/base_publica.html' %}
-{% load crispy_forms_tags %}
+{% load crispy_forms_tags static %}
 
 {% block title %}Cargar Noticia - Instituto de Bioingeniería{% endblock %}
 
 {% block content %}
+
+</style>
+
 <section class="py-5">
     <div class="container">
         <div class="row justify-content-center">
-            <div class="col-lg-8">
-                <div class="card-bio p-4">
-                    <h2 class="mb-4">
-                        <i class="fas fa-newspaper text-primary"></i> 
-                        Cargar Nueva Noticia
-                    </h2>
+            <div class="col-lg-10">
+                <h1 class="text-center mb-5 fade-in">
+                    <i class="fas fa-newspaper text-primary"></i> 
+                    Publicar Nueva Noticia
+                </h1>
+                
+                {% if messages %}
+                    {% for message in messages %}
+                        <div class="alert alert-{{ message.tags }} alert-dismissible fade show">
+                            {{ message }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+                
+                <form method="post" enctype="multipart/form-data" id="noticiaForm">
+                    {% csrf_token %}
                     
-                    {% if messages %}
-                        {% for message in messages %}
-                            <div class="alert alert-{{ message.tags }} alert-dismissible fade show">
-                                {{ message }}
-                                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                            </div>
-                        {% endfor %}
-                    {% endif %}
-                    
-                    <form method="post" enctype="multipart/form-data">
-                        {% csrf_token %}
-                        
-                        <!-- Campos normales del formulario -->
-                        {{ form.titulo|as_crispy_field }}
-                        {{ form.fecha_noticia|as_crispy_field }}
+                    <!-- INFORMACIÓN BÁSICA -->
+                    <div class="card-bio fade-in">
+                        <h3 class="mb-4"><i class="fas fa-info-circle"></i> Información Básica</h3>
+                        <div class="row">
+                            <div class="col-md-8">{{ form.titulo|as_crispy_field }}</div>
+                            <div class="col-md-4">{{ form.fecha_noticia|as_crispy_field }}</div>
+                        </div>
                         {{ form.resumen|as_crispy_field }}
                         {{ form.contenido|as_crispy_field }}
-                        {{ form.imagen|as_crispy_field }}
-                        {{ form.categoria|as_crispy_field }}
-                        {{ form.destacada|as_crispy_field }}
+                    </div>
+                    
+                    <!-- MULTIMEDIA -->
+                    <div class="card-bio fade-in">
+                        <h3 class="mb-4"><i class="fas fa-photo-video"></i> Multimedia</h3>
                         
-                        <!-- Campo personalizado para múltiples imágenes adicionales -->
-                        <div class="mb-3">
-                            <label class="form-label">Imágenes adicionales</label>
-                            <input type="file" name="imagenes_adicionales" class="form-control" multiple>
-                            <small class="form-text text-muted">
-                                Mantén presionada la tecla <strong>Ctrl</strong> (o <strong>Cmd</strong> en Mac) para seleccionar varias imágenes
-                            </small>
+                        <!-- Imagen Principal -->
+                        <div class="mb-4">
+                            <label class="form-label fw-bold">Imagen Principal</label>
+                            <div class="file-drop-zone" onclick="document.getElementById('id_imagen').click()">
+                                <i class="fas fa-image fa-3x text-muted mb-3"></i>
+                                <p class="mb-0">Haz clic o arrastra la imagen principal aquí</p>
+                                <small class="text-muted">1200x600px recomendado • Máx 5MB</small>
+                            </div>
+                            {{ form.imagen }}
+                            <div id="preview-imagen-principal" class="preview-container"></div>
                         </div>
                         
-                        <button type="submit" class="btn-bio w-100 mt-3">
+                        <!-- Imágenes Adicionales -->
+                        <div class="mb-4">
+                            <label class="form-label fw-bold">Galería de Imágenes</label>
+                            <div class="file-drop-zone" onclick="document.getElementById('id_imagenes_adicionales').click()">
+                                <i class="fas fa-images fa-3x text-muted mb-3"></i>
+                                <p class="mb-0">Haz clic o arrastra hasta 5 imágenes adicionales</p>
+                                <small class="text-muted">Máx 5MB cada una</small>
+                            </div>
+                            {{ form.imagenes_adicionales }}
+                            <div id="preview-imagenes-adicionales" class="preview-container"></div>
+                        </div>
+                        
+                        <!-- Video -->
+                        <div class="row">
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">Video (archivo)</label>
+                                <div class="file-drop-zone small" onclick="document.getElementById('id_video').click()">
+                                    <i class="fas fa-video fa-2x text-muted mb-2"></i>
+                                    <p class="mb-0">Subir video</p>
+                                    <small class="text-muted">Máx 100MB</small>
+                                </div>
+                                {{ form.video }}
+                                <div id="preview-video" class="preview-container mt-3"></div>
+                            </div>
+                            <div class="col-md-6">
+                                {{ form.video_url_externa|as_crispy_field }}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- ENLACES Y METADATOS -->
+                    <div class="card-bio fade-in">
+                        <h3 class="mb-4"><i class="fas fa-link"></i> Enlaces y SEO</h3>
+                        <div class="row">
+                            <div class="col-md-6">{{ form.enlace_prensa|as_crispy_field }}</div>
+                            <div class="col-md-6">{{ form.enlace_redes|as_crispy_field }}</div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">{{ form.categoria|as_crispy_field }}</div>
+                            <div class="col-md-6">{{ form.keywords|as_crispy_field }}</div>
+                        </div>
+                        <div class="form-check form-switch mt-3">
+                            {{ form.destacada }}
+                            <label class="form-check-label fw-bold" for="{{ form.destacada.id_for_label }}">
+                                Marcar como noticia destacada
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <!-- BOTONES -->
+                    <div class="text-center mt-4 fade-in">
+                        <button type="submit" class="btn-bio btn-bio-lg">
                             <i class="fas fa-upload me-2"></i>Publicar Noticia
                         </button>
-                    </form>
-                    
-                    <hr>
-                    <a href="{% url 'web_publica:noticias' %}" class="btn btn-outline-light btn-sm">
-                        <i class="fas fa-arrow-left me-2"></i>Volver a Noticias
-                    </a>
-                </div>
+                        <a href="{% url 'web_publica:noticias' %}" class="btn btn-outline-light btn-lg ms-3">
+                            <i class="fas fa-times me-2"></i>Cancelar
+                        </a>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
 </section>
 
+<script>
+// Drag & Drop con previsualización y eliminación
+function setupDropZone(inputId, previewId, allowMultiple = false, isVideo = false, maxFiles = null) {
+    const input = document.getElementById(inputId);
+    const preview = document.getElementById(previewId);
+    const dropZone = input.parentElement;
+    let filesArray = [];
+    
+    // Drag & Drop
+    ['dragenter', 'dragover'].forEach(event => {
+        dropZone.addEventListener(event, (e) => {
+            e.preventDefault();
+            dropZone.classList.add('dragover');
+        });
+    });
+    
+    ['dragleave', 'drop'].forEach(event => {
+        dropZone.addEventListener(event, (e) => {
+            e.preventDefault();
+            dropZone.classList.remove('dragover');
+        });
+    });
+    
+    dropZone.addEventListener('drop', (e) => {
+        const files = [...e.dataTransfer.files];
+        handleFiles(files, allowMultiple, isVideo, maxFiles);
+    });
+    
+    input.addEventListener('change', (e) => {
+        const files = [...e.target.files];
+        handleFiles(files, allowMultiple, isVideo, maxFiles);
+    });
+    
+    function handleFiles(files, allowMultiple, isVideo, maxFiles) {
+        if (!allowMultiple) {
+            filesArray = [files[0]];
+            input.value = '';
+            preview.innerHTML = '';
+        } else {
+            if (maxFiles && (filesArray.length + files.length > maxFiles)) {
+                alert(`Máximo ${maxFiles} archivos permitidos`);
+                return;
+            }
+            filesArray = [...filesArray, ...files];
+        }
+        
+        renderPreviews(isVideo);
+        updateInputFiles();
+    }
+    
+    function renderPreviews(isVideo) {
+        preview.innerHTML = '';
+        filesArray.forEach((file, index) => {
+            if (isVideo && !file.type.startsWith('video/')) return;
+            if (!isVideo && !file.type.startsWith('image/')) return;
+            
+            const reader = new FileReader();
+            const container = document.createElement('div');
+            container.className = 'preview-item';
+            
+            reader.onload = (e) => {
+                if (isVideo) {
+                    container.innerHTML = `
+                        <video src="${e.target.result}" muted loop></video>
+                        <button type="button" class="remove-btn" onclick="removeFile(${index})">×</button>
+                    `;
+                } else {
+                    container.innerHTML = `
+                        <img src="${e.target.result}" alt="Preview">
+                        <button type="button" class="remove-btn" onclick="removeFile(${index})">×</button>
+                    `;
+                }
+            };
+            
+            reader.readAsDataURL(file);
+            preview.appendChild(container);
+        });
+    }
+    
+    function removeFile(index) {
+        filesArray.splice(index, 1);
+        renderPreviews(isVideo);
+        updateInputFiles();
+    }
+    
+    function updateInputFiles() {
+        const dataTransfer = new DataTransfer();
+        filesArray.forEach(file => dataTransfer.items.add(file));
+        input.files = dataTransfer.files;
+    }
+}
+
+// Inicializar
+document.addEventListener('DOMContentLoaded', () => {
+    setupDropZone('id_imagen', 'preview-imagen-principal', false, false);
+    setupDropZone('id_imagenes_adicionales', 'preview-imagenes-adicionales', true, false, 5);
+    setupDropZone('id_video', 'preview-video', false, true);
+});
+</script>
 {% endblock %}

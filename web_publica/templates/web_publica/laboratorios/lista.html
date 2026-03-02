@@ -1,28 +1,60 @@
-<!-- templates/web_publica/laboratorios/lista.html -->
 {% extends 'web_publica/base_publica.html' %}
+{% load static %}
+
 {% block content %}
+
+
+<!-- 💥 HERO SECTION -->
+<section class="hero-section d-flex align-items-center">
+    <!-- Imagen de fondo del hero -->
+        <img src="/static/img/hero_inbio.jpg" class="hero-bg-img" alt="Imagen de fondo INBIO">
+    <div class="hero-overlay"></div> 
+    <div class="hero-content">
+        <h1 class="hero-title fade-in">Nuestros Laboratorios </h1>
+        <p class="hero-subtitle fade-in"> Espacios equipados para investigación, docencia y desarrollo científico.
+        </p>
+    </div>
+</section>
+
+<!-- 💥 LISTADO DE LABORATORIOS -->
 <section class="py-5">
     <div class="container">
-        <h1 class="text-center mb-5">Laboratorios</h1>
-        <div class="row">
+        <div class="row g-4">
+
             {% for lab in laboratorios %}
             <div class="col-md-4 fade-in">
-                <div class="card-bio">
-                    {% if lab.imagen %}
-                    <img src="{{ lab.imagen.url }}" class="card-img-top" alt="{{ lab.nombre }}">
+                <div class="card card-bio h-100 shadow-sm border-0 lab-card">
+
+                    <!-- Imagen del laboratorio -->
+                    {% if lab.imagen_principal %}
+                    <img src="{{ lab.imagen_principal.url }}" class="card-img-top lab-image" alt="{{ lab.nombre }}">
                     {% endif %}
+
                     <div class="card-body">
-                        <h5>{{ lab.nombre }}</h5>
-                        <p>{{ lab.descripcion|truncatewords:20 }}</p>
-                        <small class="text-muted">Capacidad: {{ lab.capacidad }} personas</small>
-                        <br><br>
-                        <a href="#" class="btn-bio btn-sm">Ver disponibilidad</a>
+                        <h5 class="card-title fw-bold">{{ lab.nombre }}</h5>
+                        <p class="card-text text-muted">
+                            {{ lab.descripcion|truncatewords:20 }}
+                        </p>
+
+                        <div class="d-flex justify-content-between align-items-center mt-3">
+                            <span class="badge bg-primary px-3 py-2">
+                                Capacidad: {{ lab.capacidad }}
+                            </span>
+
+                            <!-- Botón a detalles -->
+                            <a href="{% url 'web_publica:laboratorio_detalle' lab.pk %}"
+                               class="btn btn-outline-primary btn-sm">
+                                Ver detalles →
+                            </a>
+                        </div>
                     </div>
+
                 </div>
             </div>
             {% endfor %}
+
         </div>
     </div>
 </section>
-{% endblock %}
 
+{% endblock %}

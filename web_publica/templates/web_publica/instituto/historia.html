@@ -1,31 +1,99 @@
 {% extends 'web_publica/base_publica.html' %}
 {% block content %}
+
+<style>
+/* === TIMELINE ESTILOS PROFESIONALES === */
+
+/* Línea vertical */
+.timeline {
+    position: relative;
+    margin-left: 20px;
+    padding-left: 25px;
+    border-left: 3px solid var(--primary-color); /* línea principal */
+}
+
+/* Cada hito */
+.timeline-item {
+    position: relative;
+    margin-bottom: 3rem;
+}
+
+/* Punto circular en la línea */
+.timeline-item::before {
+    content: "";
+    position: absolute;
+    left: -34px;
+    top: 10px;
+    width: 18px;
+    height: 18px;
+    background: var(--secondary-color);
+    border-radius: 50%;
+    border: 3px solid white;
+    box-shadow: 0 0 8px rgba(0,0,0,0.2);
+}
+
+/* === IMÁGENES === */
+
+/* 🔥 Tamaño fijo, responsive y recorte visual limpio */
+.timeline-img {
+    width: 100%;
+    height: 200px;      /* << ajusta el tamaño de la imagen */
+    object-fit: cover;   /* << evita deformación y recorta elegante */
+    border-radius: 12px; /* << bordes redondeados */
+    margin-top: 10px;
+    box-shadow: var(--shadow-sm);
+}
+
+/* Títulos y textos */
+.timeline h3 {
+    font-weight: 700;
+}
+
+.timeline h4 {
+    margin-bottom: .5rem;
+    font-weight: 600;
+}
+
+</style>
+
 <section class="py-5">
     <div class="container">
         <h1 class="text-center mb-5 fade-in">{{ titulo_seccion }}</h1>
-        
+
         <div class="timeline">
+
             {% for fecha in fechas %}
             <div class="timeline-item fade-in">
                 <div class="card-bio">
                     <div class="row align-items-center">
+
+                        <!-- Año -->
                         <div class="col-md-2">
                             <h3 class="text-primary">{{ fecha.fecha|date:"Y" }}</h3>
                         </div>
+
+                        <!-- Texto + imagen -->
                         <div class="col-md-10">
                             <h4>{{ fecha.titulo }}</h4>
                             <p>{{ fecha.descripcion }}</p>
+
                             {% if fecha.imagen %}
-                            <img src="{{ fecha.imagen.url }}" alt="{{ fecha.titulo }}" class="img-fluid rounded">
+                            <!-- Imagen mejorada -->
+                            <img src="{{ fecha.imagen.url }}"
+                                 alt="{{ fecha.titulo }}"
+                                 class="timeline-img">  <!-- << clase nueva controlada -->
                             {% endif %}
+
                         </div>
                     </div>
                 </div>
             </div>
             {% empty %}
-            <p class="text-center">No hay eventos históricos registrados aún.</p>
+                <p class="text-center">No hay eventos históricos registrados aún.</p>
             {% endfor %}
+
         </div>
     </div>
 </section>
+
 {% endblock %}

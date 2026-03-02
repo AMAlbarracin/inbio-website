@@ -5,28 +5,107 @@
 
 {% block extra_css %}
 <style>
-    .dashboard-card {
-        background: linear-gradient(135deg, var(--color-primary), #1e3a8a);
-        color: white;
-        border-radius: 12px;
-        padding: 20px;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-        transition: transform 0.3s ease;
-    }
-    .dashboard-card:hover {
-        transform: translateY(-5px);
-    }
-    .dashboard-card .icon {
-        font-size: 2.5rem;
-        opacity: 0.8;
-    }
-    .table-hover tbody tr:hover {
-        background-color: rgba(13, 27, 62, 0.05);
-    }
-    .btn-action {
-        padding: 4px 8px;
-        font-size: 0.8rem;
-    }
+    /* ========================================================================= */
+/* PANEL DE CONTROL – ESTILO MODERNO */
+/* ========================================================================= */
+
+/* Título principal */
+.dashboard-title {
+    font-size: 2.4rem;
+    font-weight: 800;
+    color: #0d1b3e;
+    text-transform: uppercase;
+    letter-spacing: .5px;
+    margin-bottom: 40px;
+}
+
+/* ----------------------- */
+/* Tarjetas del dashboard  */
+/* ----------------------- */
+.dashboard-card {
+    background: var(--primary-color);
+    color: white;
+    border-radius: 14px;
+    padding: 22px;
+    text-align: center;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.12);
+    transition: all .25s ease;
+    cursor: pointer;
+}
+
+.dashboard-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 12px 22px rgba(0,0,0,0.18);
+}
+
+.dashboard-card .icon {
+    font-size: 2.8rem;
+    opacity: 0.9;
+    margin-bottom: 8px;
+}
+
+.dashboard-card p {
+    margin: 0;
+    font-size: 0.95rem;
+    opacity: 0.85;
+}
+
+/* ----------------------- */
+/* Contenedor de tablas    */
+/* ----------------------- */
+
+
+/* Botón pequeño del header */
+.btn-bio-sm {
+    padding: 6px 12px;
+    background: #1d4ed8;
+    color: white !important;
+    font-size: 0.85rem;
+    border-radius: 8px;
+    transition: background .2s ease;
+}
+
+.btn-bio-sm:hover {
+    background: #163fa4;
+}
+
+/* ----------------------- */
+/* Tablas                   */
+/* ----------------------- */
+.table-hover tbody tr:hover {
+    background-color: rgba(156, 157, 160, 0.06);
+}
+
+.table thead {
+    background: #f3f4f6;
+}
+
+.table th {
+    font-size: 0.9rem;
+    font-weight: 700;
+    letter-spacing: .3px;
+    color: #a7abb1ff;
+}
+
+/* Acciones */
+.btn-action {
+    padding: 4px 8px;
+    font-size: 0.8rem;
+    border-radius: 6px;
+}
+
+/* ----------------------- */
+/* Búsqueda activa          */
+/* ----------------------- */
+.search-active {
+    background: #f0f5ff;
+    border-left: 5px solid var(--primary-color);
+    padding: 18px 22px;
+    border-radius: 10px;
+    margin-bottom: 40px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+}
+
 </style>
 {% endblock %}
 
@@ -228,6 +307,11 @@
                     </tbody>
                 </table>
             </div>
+            {% if publicaciones.has_other_pages %}
+                <div class="card-footer">
+                    {% include 'web_publica/admin/pagination.html' with page=publicaciones %}
+                </div>
+            {% endif %}
         </div>
 
         <!-- INVESTIGADORES -->
@@ -275,6 +359,11 @@
                     </tbody>
                 </table>
             </div>
+            {% if investigadores.has_other_pages %}
+                <div class="card-footer">
+                    {% include 'web_publica/admin/pagination.html' with page=investigadores %}
+                </div>
+            {% endif %}
         </div>
 
         <!-- PROYECTOS -->
@@ -318,6 +407,11 @@
                     </tbody>
                 </table>
             </div>
+            {% if proyectos.has_other_pages %}
+                <div class="card-footer">
+                    {% include 'web_publica/admin/pagination.html' with page=proyectos %}
+                </div>
+            {% endif %}
         </div>
 
         <!-- EVENTOS -->
@@ -359,6 +453,11 @@
                     </tbody>
                 </table>
             </div>
+            {% if eventos.has_other_pages %}
+                <div class="card-footer">
+                    {% include 'web_publica/admin/pagination.html' with page=eventos %}
+                </div>
+            {% endif %}
         </div>
 
         <!-- SERVICIOS -->
@@ -398,6 +497,11 @@
                     </tbody>
                 </table>
             </div>
+            {% if servicios.has_other_pages %}
+                <div class="card-footer">
+                    {% include 'web_publica/admin/pagination.html' with page=servicios %}
+                </div>
+            {% endif %}
         </div>
 
         <!-- LABORATORIOS -->

@@ -1,26 +1,52 @@
-/* Variables de Diseño Bioingeniería */
+/* ============================================================
+   VARIABLES DE DISEÑO
+   ============================================================ */
+/* ============================================================
+   VARIABLES DE DISEÑO - NUEVAS
+   ============================================================ */
 :root {
-    --primary-color: #0a192f;    /* Azul oscuro profesional */
-    --secondary-color: #64ffda;  /* Verde neón bio */
-    --accent-color: #ff6b6b;     /* Rojo para destacados */
-    --text-color: #e6f1ff;
-    --bg-gradient: linear-gradient(135deg, #0a192f 0%, rgba(0, 94, 125, 0.8) 100%);
+    /* Colores profesionales bioingeniería */
+    --primary-color: #0a192f;
+    --secondary-color: #265072;
+    --accent-color: #397591;
+    --text-color: #1e293b;         /* Gris oscuro para lectura */
+    --bg-light: #f8fafc;           /* Blanco hueso */
+    --bg-dark: #0f172a;
+    --bg-gradient: linear-gradient(135deg, var(--bg-light) 0%, #e2e8f0 100%);
+    --text-light: #e6f7ff;
+    --text-muted: #90a4ae;
+    --card-bg: rgba(255, 255, 255, 0.08);
+    --card-border: rgba(255, 255, 255, 0.12);
+    --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    --shadow-sm: 0 4px 6px rgba(0, 0, 0, 0.1);
+    --shadow-md: 0 8px 25px rgba(0, 0, 0, 0.15);
+    --shadow-lg: 0 20px 40px rgba(0, 0, 0, 0.25);
+
+    /* Tipografía */
+    --font-primary: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    --font-display: 'Bitter', serif;
 }
 
-/* Tipografía */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap');
+
+
+
+/* Añade esto para importar la fuente */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Bitter:wght@400;600;700&display=swap');
 
 body {
-    font-family: 'Inter', sans-serif;
-    background: var(--bg-gradient);
-    color: var(--text-color);
-    min-height: 100vh;
+    font-family: var(--font-primary) !important;  /* !important sobrescribe Bootstrap */
+    background: var(--bg-light) !important;
+    color: var(--text-color) !important;
+    line-height: 1.6 !important;
 }
 
-/* Navbar Animación */
+
+/* ============================================================
+   NAVBAR
+   ============================================================ */
 .navbar {
     backdrop-filter: blur(10px);
-    background: rgba(10, 25, 47, 0.9) !important;
+    background: rgba(22, 47, 85, 0.9) !important;
     transition: all 0.3s ease;
 }
 
@@ -29,82 +55,309 @@ body {
     box-shadow: 0 2px 20px rgba(0,0,0,0.3);
 }
 
-/* Hero Section */
+.navbar-nav .nav-link {
+    padding: 8px 15px !important;
+}
+
+.dropdown-menu {
+    font-size: 0.9rem;
+}
+
+
+
+/* ============================================================
+   HERO SECTION — MEJORADO
+   ============================================================ */
+
 .hero-section {
-    height: 100vh;
-    background: url('../images/hero-bg.jpg') center/cover;
+    height: 50vh;
     position: relative;
     display: flex;
     align-items: center;
     justify-content: center;
-    overflow: hidden;
+    overflow: hidden;    
+    overflow-x: hidden;
+    background: linear-gradient(135deg, var(--primary-color) 0%, #1e3a5f 100%);
 }
-
+/* === NUEVO / MEJORADO === Overlay más suave y moderno */
 .hero-section::before {
     content: '';
     position: absolute;
-    top: 0; left: 0;
-    width: 100%; height: 100%;
-    background: rgba(10, 25, 47, 0.7);
+    inset: 0;
+    background: rgba(10, 25, 47, 0.35); /* antes 0.7, ahora más profesional */
     z-index: 1;
 }
 
+/* === NUEVO / MEJORADO === Gradient fade inferior */
+.hero-section::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    width: 100%;    
+    background: linear-gradient(to bottom, transparent, var(--primary-color));
+    z-index: 1;
+}
+
+
 .hero-content {
-    position: relative;
-    z-index: 2;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
     text-align: center;
+    z-index: 3;
+    width: 90%;
+    max-width: 900px;
+    padding: 0 20px;
     animation: fadeInUp 1s ease;
 }
 
-@keyframes fadeInUp {
-    from { opacity: 0; transform: translateY(30px); }
-    to { opacity: 1; transform: translateY(0); }
-}
 
 .hero-title {
-    font-size: 3.5rem;
+    font-size: 3.5rem !important;
     font-weight: 700;
-    background: linear-gradient(90deg, var(--secondary-color), #4ecdc4);
-    
-    /* Propiedad estándar */
-    background-clip: text;
-    
-    /* Compatibilidad con navegadores WebKit */
+    letter-spacing: -0.5px;
+    margin-bottom: 1rem !important;
+    background: linear-gradient(to right, #fff, var(--secondary-color));
     -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-
-    margin-bottom: 1rem;
+    background-clip: text;
+    color: transparent;
+    line-height: 1.2;
+}
+.hero-subtitle {
+    font-size: 1.25rem;
+    color: var(--text-light);
+    margin-bottom: 2rem;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+}
+.hero-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(to bottom, rgba(10, 25, 47, 0.8) 0%, rgba(10, 25, 47, 0.4) 100%);
+    z-index: 2;
 }
 
-
-.hero-section video {
+.hero-video {
     position: absolute;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
     object-fit: cover;
-    z-index: 0;
+    opacity: 0.6;
+    z-index: 1;
 }
 
-/* Cards Modernas */
+.hero-img {
+    background-image: url('/static/img/Foto-grupo.jpg'); /* Cambiala si querés */
+    background-size: cover;
+    background-position: center;
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    filter: brightness(0.55);
+}
+
+.btn-hero {
+    padding: 12px 32px;
+    font-size: 1.1rem;
+    border-radius: 50px;
+    background: var(--secondary-color);
+    color: var(--primary-color);
+    font-weight: 600;
+    transition: var(--transition);
+}
+.btn-hero:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 20px rgba(100, 181, 246, 0.3);
+}
+
+
+
+/* ============================================================
+   NUEVOS CARDS
+   ============================================================ */
+/* ============================================================
+   CARD FORMULARIOS SOBRE FONDO CLARO
+   ============================================================ */
 .card-bio {
-    background: rgba(255,255,255,0.05);
-    border: 1px solid rgba(100,255,218,0.2);
+    background: var(--primary-color);              /* azul institucional sólido */
+    color: var(--text-light);                     /* texto blanco */
+    border: 1px solid var(--secondary-color);     
     border-radius: 15px;
     padding: 2rem;
-    backdrop-filter: blur(10px);
-    transition: all 0.3s ease;
-    height: 100%;
+    box-shadow: var(--shadow-md);
+    transition: var(--transition);
+}
+
+.card-bio h2,
+.card-bio label {
+    color: var(--text-light) !important;
 }
 
 .card-bio:hover {
-    transform: translateY(-10px);
-    border-color: var(--secondary-color);
-    box-shadow: 0 10px 30px rgba(100,255,218,0.3);
+    transform: translateY(-6px);
+    box-shadow: var(--shadow-lg);
 }
 
-/* Timeline */
+/* Inputs adaptados para card oscura */
+.card-bio .form-control,
+.card-bio .form-select,
+.card-bio textarea {
+    background: rgba(255,255,255,0.15);
+    border: 1px solid rgba(255,255,255,0.25);
+    color: var(--text-light);
+}
+
+.card-bio .form-control::placeholder,
+.card-bio textarea::placeholder {
+    color: rgba(255,255,255,0.7);
+}
+
+.card-bio .form-control:focus,
+.card-bio .form-select:focus {
+    background: rgba(255,255,255,0.25);
+    border-color: var(--accent-color);
+    box-shadow: 0 0 0 0.2rem rgba(57, 117, 145, 0.4);
+}
+
+/* Checkboxes */
+.card-bio .form-check-label {
+    color: var(--text-light);
+}
+
+/* ============================
+   FORMULARIOS – ESTILO INBIO
+   Aplicado a Cargar Noticia
+=============================== */
+
+
+
+/* Títulos dentro de las tarjetas */
+.card-bio h3 {
+    font-weight: 600;
+    color: var(--primary-color);
+}
+
+
+@keyframes fadeIn {
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* ============================
+   SECCIÓN MULTIMEDIA
+=============================== */
+
+.file-drop-zone {
+    border: 2px dashed var(--card-border);
+    border-radius: 14px;
+    padding: 2rem;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    background: rgba(255, 255, 255, 0.4);
+}
+
+.file-drop-zone:hover {
+    border-color: var(--secondary-color);
+    background: rgba(100, 181, 246, 0.08);
+    transform: scale(1.02);
+}
+
+.file-drop-zone.dragover {
+    border-color: var(--secondary-color);
+    background: rgba(100, 181, 246, 0.12);
+}
+
+/* ============================
+   PREVISUALIZACIONES
+=============================== */
+
+.preview-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+.preview-item {
+    position: relative;
+    border-radius: 10px;
+    overflow: hidden;
+    aspect-ratio: 1;
+    box-shadow: 0px 4px 12px rgba(0,0,0,0.15);
+}
+
+.preview-item img,
+.preview-item video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.preview-item video {
+    background: #000;
+}
+
+/* Botón para eliminar imagen/video */
+.preview-item .remove-btn {
+    position: absolute;
+    top: 6px;
+    right: 6px;
+    background: rgba(220, 53, 69, 0.95);
+    color: #fff;
+    border: none;
+    font-size: 16px;
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s ease;
+}
+
+.preview-item .remove-btn:hover {
+    background: rgba(200, 40, 50, 1);
+}
+
+/* ============================
+   INPUTS Y CRISPY FORMS
+=============================== */
+
+.form-control,
+textarea.form-control {
+    border-radius: 10px !important;
+    border: 1px solid var(--card-border);
+    background: rgba(255,255,255, 0.7);
+    transition: box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+.form-control:focus {
+    border-color: var(--secondary-color);
+    box-shadow: 0 0 0 3px rgba(100, 181, 246, 0.3);
+}
+
+/* Switch destacado */
+.form-check-input:checked {
+    background-color: var(--secondary-color);
+    border-color: var(--secondary-color);
+}
+
+
+
+/* ============================================================
+   TIMELINE
+   ============================================================ */
 .timeline {
     position: relative;
     padding-left: 2rem;
@@ -135,7 +388,11 @@ body {
     border: 3px solid var(--primary-color);
 }
 
-/* Grid de Equipo */
+
+
+/* ============================================================
+   EQUIPO / AUTORIDADES
+   ============================================================ */
 .team-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
@@ -163,26 +420,49 @@ body {
     box-shadow: 0 0 20px var(--secondary-color);
 }
 
-/* Botones */
-.btn-bio {
-    background: linear-gradient(90deg, var(--secondary-color), #4ecdc4);
-    color: var(--primary-color);
-    font-weight: 600;
-    padding: 12px 30px;
-    border: none;
-    border-radius: 30px;
-    text-decoration: none;
-    display: inline-block;
-    transition: all 0.3s ease;
-}
 
+
+/* ============================================================
+   BOTONES
+   ============================================================ */
+/* === BOTONES MEJORADOS === */
+.btn-bio {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.5rem;
+    background: var(--secondary-color);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    transition: var(--transition);
+    text-decoration: none;
+    cursor: pointer;
+}
 .btn-bio:hover {
     transform: scale(1.05);
     box-shadow: 0 5px 20px rgba(100,255,218,0.4);
     color: var(--primary-color);
 }
 
-/* Animaciones Scroll */
+.btn-bio-xs {
+    padding: 0.5rem 1rem;
+    font-size: 0.85rem;
+}
+.btn-bio-sm {
+    padding: 0.6rem 1.2rem;
+    font-size: 0.9rem;
+}
+.btn-bio-lg {
+    padding: 1rem 2rem;
+    font-size: 1.1rem;
+    border-radius: 50px;
+}
+
+/* ============================================================
+   ANIMACIONES
+   ============================================================ */
 .fade-in {
     opacity: 0;
     transform: translateY(30px);
@@ -194,32 +474,28 @@ body {
     transform: translateY(0);
 }
 
-/* Responsive */
+@keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
 @media (max-width: 768px) {
+
+    /* === NUEVO / MEJORADO === tamaño de título más equilibrado */
     .hero-title {
         font-size: 2.5rem;
     }
-    
+
     .timeline {
         padding-left: 1rem;
     }
 }
 
-/* Ajustes de navbar */
-.navbar-nav .nav-link {
-    padding: 8px 15px !important;
-}
-
-.dropdown-menu {
-    font-size: 0.9rem;
-}
-
-/* Ajustes de cards en secciones */
-.card-bio {
-    margin-bottom: 2rem;
-}
-
-/* Responsive */
 @media (max-width: 992px) {
     .navbar-nav .dropdown-menu {
         border: none;
@@ -227,29 +503,36 @@ body {
     }
 }
 
-/* Bloque contenedor de logos */
-    .logo-block {
-        background: #ffffff;             /* Fondo blanco */
-        padding: 20px 25px;              /* Separación interna */
-        border-radius: 10px;             /* Bordes redondeados suaves */
-        box-shadow: 0 2px 8px rgba(0,0,0,0.08); /* Sombra suave */
-        margin-top: 30px;
-        margin-bottom: 20px;
-    }
 
-    /* Ajuste de los logos */
-    .logo-block img {
-        object-fit: contain;
-        transition: transform 0.2s ease;
-    }
 
-    /* Pequeña animación al pasar el mouse */
-    .logo-block img:hover {
-        transform: scale(1.03);
-    }
-    
-    .logo-block .d-flex img {
-    flex: 1;              /* cada imagen ocupa espacio proporcional */
-    max-width: 200px;     /* para que no se deformen */
+/* ============================================================
+   BLOQUE DE LOGOS (MEJORADO)
+   ============================================================ */
+
+/* === NUEVO / MEJORADO ===  
+   Mejor proporción, sombras suaves y equilibrio visual */
+.logo-block {
+    background: #ffffff;
+    padding: 25px 30px;
+    border-radius: 12px;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.07);
+    margin-top: 30px;
+    margin-bottom: 20px;
+}
+
+/* Ajuste de los logos */
+.logo-block img {
+    object-fit: contain;
+    transition: transform 0.2s ease;
+}
+
+/* Hover suave */
+.logo-block img:hover {
+    transform: scale(1.03);
+}
+
+.logo-block .d-flex img {
+    flex: 1;
+    max-width: 200px;
     height: auto;
 }

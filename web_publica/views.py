@@ -2,30 +2,69 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.core.mail import send_mail
 from django.contrib import messages
 from .models import *
-from .forms import ContactoForm, NoticiaForm, PublicacionForm, LaboratorioForm, ServicioForm, EventoForm, InvestigadorForm, ProyectoForm
+from .forms import ContactoForm, NoticiaForm, PublicacionForm, LaboratorioForm, ServicioForm, EventoForm, InvestigadorForm, ProyectoForm, ComentarioNoticiaForm, LaboratorioImagenForm, EquipamientoFormset
 from django.contrib.auth.decorators import login_required
 from django.db.models import Count
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.http import require_POST
 import json
 from web_publica.utils import enviar_notificacion_reserva
 from django.contrib.auth.decorators import user_passes_test
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ValidationError
 
-# web_publica/views.py
+from django.utils import timezone
+from datetime import datetime
+from django.utils.text import slugify
+from django.conf import settings
+import re
+import requests
+import feedparser
+from scholarly import scholarly
+
 def home_view(request):
-    """Vista de página principal con datos dinámicos"""
-    context = {
-        'fechas_destacadas': FechaImportante.objects.filter(destacado=True)[:5],
-        'miembros_directiva': Investigador.objects.filter(categoria__in=['DIRECTOR', 'CODIRECTOR']),
-        'destacadas': Noticia.objects.filter(destacada=True, activa=True)[:3],  # Noticias
-        'contadores': {
-            'proyectos': 127,
-            'publicaciones': Publicacion.objects.count(),
-            'investigadores': Investigador.objects.filter(activo=True).count(),
-        }
+    """
+    Vista de página principal con datos dinámicos y contadores reales
+    """
+    
+    # ===== CONTADORES DINÁMICOS =====
+    contadores = {
+        'proyectos': Proyecto.objects.filter(activo=True).count(),
+        'publicaciones': Publicacion.objects.count(),
+        'investigadores': Investigador.objects.filter(activo=True).count(),
+        # Años de antigüedad: calcula automáticamente desde 2010
+        'anios_trayectoria': datetime.now().year - 2010,
     }
+    
+    # ===== MOMENTOS CLAVE =====
+    # Últimos 5 momentos destacados (ordenados por fecha más reciente)
+    fechas_destacadas = FechaImportante.objects.filter(destacado=True).order_by('-fecha')[:5]
+    
+    # ===== AUTORIDADES =====
+    # Director y Subdirector (máximo 2 personas)
+    miembros_directiva = Investigador.objects.filter(
+        categoria__in=['DIRECTOR', 'SUBDIRECTOR'],
+        activo=True
+    ).order_by('orden')[:2]  # "orden" permite poner primero al Director
+    
+    # ===== ÚLTIMAS NOTICIAS =====
+    # Las 5 noticias más recientes (destacadas o no, pero activas)
+    # Usamos order_by('-fecha_noticia') para asegurar el orden cronológico
+    noticias_ultimas = Noticia.objects.filter(
+        activa=True,        
+    ).order_by('-fecha_noticia')[:5]
+    
+    # Para el contador de noticias activas (opcional)
+    contadores['noticias_activas'] = Noticia.objects.filter(activa=True).count()
+    
+    context = {
+        'fechas_destacadas': fechas_destacadas,
+        'miembros_directiva': miembros_directiva,
+        'noticias_ultimas': noticias_ultimas,
+        'contadores': contadores,
+    }
+    
     return render(request, 'web_publica/home.html', context)
 
 
@@ -47,28 +86,119 @@ def mision_vision_view(request):
     }
     return render(request, 'web_publica/instituto/mision_vision.html', context)
 
+from django.db.models import Q, Value
+from django.db.models.functions import Concat
+from django.http import JsonResponse
+
 def equipo_lista_view(request):
     categoria = request.GET.get('categoria')
+    busqueda = request.GET.get('busqueda', "").strip()
+
+    # Consulta base
+    miembros = Investigador.objects.filter(activo=True)
+
+    # Campo concatenado para búsquedas
+    miembros = miembros.annotate(
+        nombre_completo_busqueda=Concat('nombre', Value(' '), 'apellido')
+    )
+
+    # Filtro por categoría
     if categoria:
-        miembros = Investigador.objects.filter(categoria=categoria, activo=True)
-    else:
-        miembros = Investigador.objects.filter(activo=True)
-    
+        miembros = miembros.filter(categoria=categoria)
+
+    # Filtro general (nombre, apellido, nombre completo, título, línea)
+    if busqueda:
+        miembros = miembros.filter(
+            Q(nombre__icontains=busqueda) |
+            Q(apellido__icontains=busqueda) |
+            Q(nombre_completo_busqueda__icontains=busqueda) |
+            Q(titulo_Academico__icontains=busqueda) |
+            Q(linea_investigacion__icontains=busqueda)
+        )
+
     context = {
         'miembros': miembros,
         'categorias': Investigador.CATEGORIA_CHOICES,
         'categoria_actual': categoria,
-        'es_admin': request.user.is_authenticated and (request.user.is_staff or request.user.groups.filter(name='Coordinadores').exists())
+        'busqueda': busqueda,
+        'es_admin': request.user.is_authenticated and (
+            request.user.is_staff or 
+            request.user.groups.filter(name='Coordinadores').exists()
+        )
     }
+
     return render(request, 'web_publica/equipo/lista_investigadores.html', context)
 
-def investigador_detalle_view(request, slug):
-    """Perfil individual de investigador"""
-    # Crearemos slug automáticamente
-    from django.utils.text import slugify
-    investigador = Investigador.objects.get(id=slug)  # Temporal
-    context = {'investigador': investigador}
-    return render(request, 'web_publica/equipo/detalle_investigador.html', context)
+
+
+def investigador_detalle_view(request, id):
+    investigador = get_object_or_404(Investigador, id=id)
+    
+    # --- Laboratorios asociados ---
+    laboratorios_a_cargo = investigador.laboratorios_a_cargo.all()
+    laboratorios_integrantes = investigador.laboratorios_participantes.all()
+
+    # --- 1) PUBLICACIONES LOCALES ---
+    publicaciones_locales = []
+    for p in investigador.publicaciones.all():
+        publicaciones_locales.append({
+            "titulo": p.titulo,
+            "autores": p.autores_completos(),
+            "revista": p.revista,
+            "año": str(p.año) if p.año else None,
+            "link": p.link or p.doi or "",
+            "fuente": p.fuente,
+        })
+
+    # --- 2) IMPORTAR ORCID ---
+    if investigador.orcid_id:
+        sincronizar_publicaciones(investigador)
+
+    # --- 3) IMPORTAR GOOGLE SCHOLAR ---
+    if investigador.google_scholar:
+        sincronizar_publicaciones_scholar(investigador)
+
+    # --- 4) RECARGAR desde BD ---
+    # Después de sincronizar, recargamos las publicaciones vinculadas
+    publicaciones_db = investigador.publicaciones.all()
+
+    publicaciones_finales = []
+    titulos_vistos = set()
+
+    for p in publicaciones_db:
+        tnorm = p.titulo.strip().lower()
+        if tnorm in titulos_vistos:
+            continue
+        titulos_vistos.add(tnorm)
+
+        publicaciones_finales.append({
+            "titulo": p.titulo,
+            "autores": p.autores_completos(),
+            "revista": p.revista,
+            "año": p.año,
+            "link": p.link or (f"https://doi.org/{p.doi}" if p.doi else ""),
+            "fuente": p.fuente,
+        })
+
+    # Orden descendente por año
+    publicaciones_finales = sorted(
+        publicaciones_finales,
+        key=lambda x: x.get("año") or 0,
+        reverse=True
+    )
+
+    context = {
+        'laboratorios_a_cargo': laboratorios_a_cargo,
+        'laboratorios_integrantes': laboratorios_integrantes,
+        "investigador": investigador,
+        "publicaciones": publicaciones_finales,
+    }
+    return render(request, "web_publica/equipo/detalle_investigador.html", context)
+
+
+    
+from .utils import fetch_scholar_pubs
+
 
 def contacto_view(request):
     """Formulario de contacto funcional"""
@@ -93,7 +223,7 @@ def contacto_view(request):
     context = {'form': form}
     return render(request, 'web_publica/contacto.html', context)
 
-def publicaciones_lista_view(request):
+#def publicaciones_lista_view(request):
     """Listado de publicaciones con filtros"""
     tipo = request.GET.get('tipo')
     año = request.GET.get('año')
@@ -117,11 +247,126 @@ def publicaciones_lista_view(request):
     }
     return render(request, 'web_publica/publicaciones/lista.html', context)
 
+from django.shortcuts import render
+from django.db.models import Count, Q
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+from django.utils import timezone
+from .models import Publicacion
+
+def publicaciones_lista_view(request):
+    """
+    Vista completa para listado de publicaciones con filtros por autor
+    """
+    # 1. CAPTURAR PARÁMETROS DE LA URL
+    tipo = request.GET.get('tipo', '').strip()
+    año = request.GET.get('año', '').strip()
+    query = request.GET.get('q', '').strip()
+    orden = request.GET.get('orden', 'año_desc')
+    page = request.GET.get('page', 1)
+    
+    # ⭐ NUEVO: Capturar múltiples autores seleccionados
+    autores_seleccionados_ids = request.GET.getlist('autores')  # Lista de IDs
+
+    # 2. EMPEZAR CON TODAS LAS PUBLICACIONES
+    publicaciones = Publicacion.objects.all()
+
+    # 3. APLICAR FILTROS
+    if tipo and tipo in [t[0] for t in Publicacion.TIPO_CHOICES]:
+        publicaciones = publicaciones.filter(tipo=tipo)
+    
+    if año and año.isdigit():
+        publicaciones = publicaciones.filter(año=int(año))
+    
+    # ⭐ NUEVO: Filtrar por autores seleccionados
+    if autores_seleccionados_ids:
+        publicaciones = publicaciones.filter(
+            autores_investigadores__id__in=autores_seleccionados_ids
+        ).distinct()  # Importante: evita duplicados cuando hay múltiples autores
+    
+    if query:
+        publicaciones = publicaciones.filter(
+            Q(titulo__icontains=query) |
+            Q(autores_externos__icontains=query) |
+            Q(revista__icontains=query) |
+            Q(doi__icontains=query)
+        )
+
+    # 4. ORDENAR
+    orden_opciones = {
+        'año_desc': '-año',
+        'año_asc': 'año',
+        'tipo': 'tipo',
+        'destacadas': '-destacada',
+    }
+    publicaciones = publicaciones.order_by(orden_opciones.get(orden, '-año'))
+
+    # 5. PAGINACIÓN
+    paginator = Paginator(publicaciones, 20)
+    try:
+        page_obj = paginator.page(page)
+    except (PageNotAnInteger, EmptyPage):
+        page_obj = paginator.page(1)
+
+    # 6. ESTADÍSTICAS PARA GRÁFICOS
+    current_year = timezone.now().year
+    años_rango = range(current_year - 7, current_year + 1)
+    
+    por_año = []
+    for a in años_rango:
+        count = Publicacion.objects.filter(año=a).count()
+        if count > 0:
+            por_año.append({'año': a, 'count': count})
+    
+    por_tipo = Publicacion.objects.values('tipo').annotate(count=Count('id')).order_by('-count')
+
+    # ⭐ NUEVO: Obtener todos los investigadores activos para los checkboxes
+    # Con número de publicaciones para mostrar contexto
+    investigadores = Investigador.objects.filter(
+        activo=True,
+        publicaciones__isnull=False  # Solo investigadores con publicaciones
+    ).annotate(
+        num_publicaciones=Count('publicaciones')
+    ).order_by('apellido', 'nombre')
+    
+    # 7. PREPARAR DATOS PARA EL TEMPLATE
+    datos_graficos = {
+        'por_año': {
+            'labels': [item['año'] for item in por_año],
+            'data': [item['count'] for item in por_año]
+        },
+        'por_tipo': {
+            'labels': [Publicacion.TIPO_CHOICES_DICT[item['tipo']] for item in por_tipo],
+            'data': [item['count'] for item in por_tipo]
+        }
+    }
+
+    # 8. CONTEXT
+    context = {
+        'publicaciones': page_obj,
+        'tipos': Publicacion.TIPO_CHOICES,
+        'años_disponibles': Publicacion.objects.values_list('año', flat=True).distinct().order_by('-año'),
+        'tipo_actual': tipo,
+        'año_actual': año,
+        'orden_actual': orden,
+        'query': query,
+        'total_publicaciones': paginator.count,
+        'datos_graficos': datos_graficos,
+        'page_obj': page_obj,
+        'is_paginated': paginator.num_pages > 1,
+        # ⭐ NUEVOS PARÁMETROS
+        'investigadores': investigadores,
+        'autores_seleccionados_ids': [int(id) for id in autores_seleccionados_ids],  # Lista de IDs numéricos
+    }
+    
+    return render(request, 'web_publica/publicaciones/lista.html', context)
+
+
 def publicacion_detalle_view(request, pk):
     """Detalle de una publicación específica"""
     publicacion = get_object_or_404(Publicacion, pk=pk)
     context = {'publicacion': publicacion}
-    return render(request, 'web_publica/publicaciones/detalle.html', context)
+    return render(request, 'web_publica/publicaciones/detalles.html', context)
+
 
 def noticias_lista_view(request):
     """Listado de noticias y eventos"""
@@ -144,13 +389,72 @@ def noticias_lista_view(request):
 
 def noticia_detalle_view(request, pk):
     noticia = get_object_or_404(Noticia, pk=pk, activa=True)
-    context = {'noticia': noticia}
-    return render(request, 'web_publica/noticias/detalle.html', context)
+    
+    # ✅ DEBUGGING: Ver todos los comentarios
+    print("=== DEBUG COMENTARIOS ===")
+    print(f"Noticia ID: {noticia.pk}")
+    print(f"Total comentarios: {noticia.comentarios.count()}")
+    print(f"Comentarios aprobados: {noticia.comentarios.filter(aprobado=True).count()}")
+    for c in noticia.comentarios.all():
+        print(f"- {c.nombre}: {c.contenido[:50]}... (aprobado: {c.aprobado})")
+    print("=========================")
+    
+    comentarios = noticia.comentarios.filter(aprobado=True)
+    # 🔥 Cargar imágenes adicionales
+    imagenes_extra = noticia.imagenes.all()
+
+    # 🔥 Detectar si la noticia tiene galería
+    videos_extra = noticia.videos_extra.all()
+    
+    if request.method == 'POST':
+        form = ComentarioNoticiaForm(request.POST)
+        if form.is_valid():
+            comentario = form.save(commit=False)
+            comentario.noticia = noticia
+            
+            comentario.aprobado = True  # Para pruebas, en producción debería ser False
+            
+            comentario.save()
+            messages.success(request, 'Comentario enviado. Se publicará tras moderación.')
+            return redirect('web_publica:noticia_detalle', pk=noticia.pk)
+    else:
+        form = ComentarioNoticiaForm()
+    
+    return render(request, 'web_publica/noticias/detalle.html', {
+        'noticia': noticia,
+        'form_comentario': form,
+        'comentarios': comentarios,
+        'imagenes_extra': imagenes_extra,
+        'videos_extra': videos_extra,
+        
+    })
 
 def laboratorios_lista_view(request):
     """Listado de laboratorios disponibles"""
-    laboratorios = Laboratorio.objects.filter(activo=True)
+    laboratorios = Laboratorio.objects.filter(activo=True).order_by('nombre')
     return render(request, 'web_publica/laboratorios/lista.html', {'laboratorios': laboratorios})
+
+def laboratorio_detalle_view(request, pk):
+    laboratorio = get_object_or_404(Laboratorio, pk=pk)
+
+    # Galería de imágenes adicionales (si existen)
+    imagenes = LaboratorioImagen.objects.filter(laboratorio=laboratorio).order_by('-id')
+
+    # Reservas próximas (solo aprobadas)
+    reservas = Reserva.objects.filter(
+        laboratorio=laboratorio,
+        estado="APROBADA",
+        fecha__gte=timezone.now().date()
+    ).order_by('fecha', 'hora_inicio')[:5]
+
+    context = {
+        "laboratorio": laboratorio,
+        "imagenes": imagenes,
+        "reservas": reservas
+    }
+
+    return render(request, "web_publica/laboratorios/detalle.html", context)
+
 
 @login_required
 def reserva_calendario_view(request):
@@ -261,30 +565,36 @@ def es_administrador_o_coordinador(user):
     """Permiso para personal administrativo"""
     return user.is_authenticated and (user.is_staff or user.groups.filter(name='Coordinadores').exists())
 
+
 @login_required
 @user_passes_test(es_administrador_o_coordinador)
 def cargar_noticia_view(request):
-    """Formulario frontend para cargar noticias"""
     if request.method == 'POST':
         form = NoticiaForm(request.POST, request.FILES)
         if form.is_valid():
             noticia = form.save()
             
-            # Guardar múltiples imágenes
-            imagenes = request.FILES.getlist('imagenes_adicionales')
-            for img in imagenes:
+            # Imágenes adicionales
+            for img in request.FILES.getlist('imagenes_adicionales'):
                 NoticiaImagen.objects.create(noticia=noticia, imagen=img)
-                
-            messages.success(request, f'Noticia "{noticia.titulo}" creada exitosamente')
-            return redirect('web_publica:noticias')
+
+            # Videos adicionales
+            for video in request.FILES.getlist('videos_adicionales'):
+                NoticiaVideo.objects.create(noticia=noticia, video=video)
+            
+            messages.success(request, 'Noticia publicada exitosamente')
+            return redirect('web_publica:noticia_detalle', pk=noticia.pk)
     else:
         form = NoticiaForm()
     
-    context = {
-        'form': form,
-        'titulo': 'Cargar Nueva Noticia'
-    }
-    return render(request, 'web_publica/forms/cargar_noticia.html', context)
+    return render(request, 'web_publica/forms/cargar_noticia.html', {'form': form})
+
+# Agregar al modelo Noticia (models.py)
+class NoticiaQuerySet(models.QuerySet):
+    def aprobadas(self):
+        return self.filter(aprobado=True)  # Para los comentarios
+
+ComentarioNoticia.add_to_class('objects', NoticiaQuerySet.as_manager())
 
 
 @login_required
@@ -308,19 +618,67 @@ def cargar_publicacion_view(request):
 
 @login_required
 @user_passes_test(es_administrador_o_coordinador)
+@login_required
+@user_passes_test(es_administrador_o_coordinador)
 def cargar_laboratorio_view(request):
-    """Formulario frontend para cargar laboratorios"""
-    if request.method == 'POST':
+
+    if request.method == "POST":
         form = LaboratorioForm(request.POST, request.FILES)
-        if form.is_valid():
+        formset = EquipamientoFormset(request.POST, request.FILES)
+
+        if form.is_valid() and formset.is_valid():
             laboratorio = form.save()
+
+            # Guardar equipamientos
+            equipamientos = formset.save(commit=False)
+            for eq in equipamientos:
+                eq.laboratorio = laboratorio
+                eq.save()
+
             messages.success(request, f'Laboratorio "{laboratorio.nombre}" creado exitosamente')
-            return redirect('web_publica:laboratorios')
+            return redirect("web_publica:laboratorios")
+
     else:
         form = LaboratorioForm()
-    
-    context = {'form': form, 'titulo': 'Cargar Laboratorio'}
-    return render(request, 'web_publica/forms/cargar_laboratorio.html', context)
+        formset = EquipamientoFormset()
+
+    context = {
+        "form": form,
+        "formset": formset,
+        "titulo": "Cargar Laboratorio"
+    }
+    return render(request, "web_publica/forms/cargar_laboratorio.html", context)
+
+@login_required
+@user_passes_test(es_administrador_o_coordinador)
+def agregar_imagenes_laboratorio_view(request, pk):
+    laboratorio = get_object_or_404(Laboratorio, pk=pk)
+
+    if request.method == 'POST':
+        print("FILES RECIBIDOS:", request.FILES)   # ← DEPURACIÓN
+       
+        form = LaboratorioImagenForm(request.POST, request.FILES)
+
+        # Lista de imágenes enviadas
+        imagenes = request.FILES.getlist('imagen')
+        print("LISTA IMAGENES:", imagenes)  # ← DEPURACIÓN
+
+        if form.is_valid():
+            for img in imagenes:
+                LaboratorioImagen.objects.create(
+                    laboratorio=laboratorio,
+                    imagen=img
+                )
+            messages.success(request, "Imágenes cargadas correctamente.")
+            return redirect('web_publica:laboratorio_detalle', pk=laboratorio.pk)
+
+    else:
+        form = LaboratorioImagenForm()
+
+    return render(request, 'web_publica/laboratorios/agregar_imagenes.html', {
+        'form': form,
+        'laboratorio': laboratorio,
+    })
 
 
 @login_required
@@ -396,7 +754,7 @@ def cargar_proyecto_view(request):
         'form': form,
         'titulo': 'Cargar Nuevo Proyecto'
     }
-    return render(request, 'web_publica/forms/cargar_proyecto.html', context)
+    return render(request, 'web_publica/forms/cargar_proyectos.html', context)
 
 # Vista pública para mostrar proyectos de investigación
 def proyectos_investigacion_view(request):
@@ -506,19 +864,57 @@ def cargas_web_view(request):
 @user_passes_test(es_administrador_o_coordinador)
 def editar_noticia_view(request, pk):
     noticia = get_object_or_404(Noticia, pk=pk)
+    imagenes = noticia.imagenes.all()      # imágenes adicionales
+    videos = noticia.videos_extra.all()    # videos adicionales
+    
     if request.method == 'POST':
         form = NoticiaForm(request.POST, request.FILES, instance=noticia)
+
         if form.is_valid():
-            form.save()
-            messages.success(request, f'✅ Noticia "{noticia.titulo}" actualizada')
+            noticia = form.save()
+
+            # =====================
+            # GUARDAR IMÁGENES NUEVAS
+            # =====================
+            nuevas_imgs = request.FILES.getlist('imagenes_adicionales')
+            for img in nuevas_imgs:
+                NoticiaImagen.objects.create(noticia=noticia, imagen=img)
+
+            # =====================
+            # GUARDAR VIDEOS NUEVOS
+            # =====================
+            nuevos_videos = request.FILES.getlist('videos_adicionales')
+            for video in nuevos_videos:
+                NoticiaVideo.objects.create(noticia=noticia, video=video)
+
+            messages.success(request, f'Noticia "{noticia.titulo}" actualizada')
             return redirect('web_publica:cargas_web')
+
     else:
         form = NoticiaForm(instance=noticia)
-    
+
     return render(request, 'web_publica/forms/editar_noticia.html', {
         'form': form,
-        'titulo': f'Editar Noticia: {noticia.titulo}'
+        'titulo': f'Editar Noticia: {noticia.titulo}',
+        'noticia': noticia,
+        'imagenes': imagenes,
+        'videos': videos,
     })
+    
+@login_required
+@user_passes_test(es_administrador_o_coordinador)
+@require_POST
+def eliminar_imagen_noticia(request, imagen_id):
+    imagen = get_object_or_404(NoticiaImagen, id=imagen_id)
+    imagen.delete()
+    return JsonResponse({'success': True})
+
+@require_POST
+def eliminar_video_noticia(request, video_id):
+    video = get_object_or_404(NoticiaVideo, id=video_id)
+    noticia_id = video.noticia.pk
+    video.delete()
+    return JsonResponse({'success': True})
 
 @login_required
 @user_passes_test(es_administrador_o_coordinador)
@@ -575,20 +971,43 @@ def eliminar_publicacion_view(request, pk):
 @login_required
 @user_passes_test(es_administrador_o_coordinador)
 def editar_laboratorio_view(request, pk):
+
     laboratorio = get_object_or_404(Laboratorio, pk=pk)
+
     if request.method == 'POST':
         form = LaboratorioForm(request.POST, request.FILES, instance=laboratorio)
-        if form.is_valid():
+        formset = EquipamientoFormset(request.POST, request.FILES, instance=laboratorio)
+
+        if form.is_valid() and formset.is_valid():
+
             form.save()
-            messages.success(request, f'✅ Laboratorio "{laboratorio.nombre}" actualizado')
-            return redirect('web_publica:cargas_web')
+
+            # Guardar cambios en equipamientos
+            equipamientos = formset.save(commit=False)
+            for eq in equipamientos:
+                eq.laboratorio = laboratorio
+                eq.save()
+
+            # Eliminar equipamientos marcados para borrado
+            for obj in formset.deleted_objects:
+                obj.delete()
+
+            messages.success(request, f'Laboratorio "{laboratorio.nombre}" actualizado correctamente.')
+            return redirect('web_publica:laboratorios')
+
     else:
         form = LaboratorioForm(instance=laboratorio)
-    
-    return render(request, 'web_publica/forms/editar_laboratorio.html', {
+        formset = EquipamientoFormset(instance=laboratorio)
+
+    context = {
         'form': form,
-        'titulo': f'Editar Laboratorio: {laboratorio.nombre}'
-    })
+        'formset': formset,
+        'laboratorio': laboratorio,
+        'titulo': f'Editar Laboratorio: {laboratorio.nombre}',
+    }
+
+    return render(request, 'web_publica/forms/editar_laboratorio.html', context)
+
 
 @login_required
 @user_passes_test(es_administrador_o_coordinador)
@@ -746,3 +1165,143 @@ def eliminar_proyecto_view(request, pk):
         'tipo': 'Proyecto',
         'cancel_url': 'web_publica:cargas_web'
     })
+    
+@login_required
+@user_passes_test(es_administrador_o_coordinador)
+def eliminar_comentario(request, pk):
+    comentario = get_object_or_404(ComentarioNoticia, pk=pk)
+    noticia_id = comentario.noticia.pk
+    comentario.delete()
+    messages.success(request, 'Comentario eliminado exitosamente.')
+    return redirect('web_publica:noticia_detalle', pk=noticia_id)
+
+
+from .models import Publicacion
+from .utils import obtener_publicaciones_orcid
+
+def sincronizar_publicaciones(investigador):
+    import requests
+
+    if not investigador.orcid_id:
+        return
+
+    url = f"https://pub.orcid.org/v3.0/{investigador.orcid_id}/works"
+    headers = {"Accept": "application/json"}
+
+    response = requests.get(url, headers=headers)
+    if response.status_code != 200:
+        return
+
+    data = response.json()
+    works = data.get("group", [])
+
+    for w in works:
+        summary = w.get("work-summary", [{}])[0]
+
+        # 🔹 Título seguro
+        titulo = (
+            summary.get("title", {})
+                   .get("title", {})
+                   .get("value", "Sin título")
+        )
+
+        # 🔹 Año seguro
+        anio = (
+            summary.get("publication-date", {})
+                   .get("year", {})
+                   .get("value", None)
+        )
+
+        # 🔹 Revista segura
+        revista = (
+            (summary.get("journal-title") or {})
+                  .get("value", "")
+        )
+
+        # 🔹 DOI seguro
+        doi = (
+            summary.get("external-ids", {})
+                   .get("external-id", [{}])[0]
+                   .get("external-id-value", "")
+        )
+
+        # Crear o recuperar publicación
+        pub_obj, created = Publicacion.objects.get_or_create(
+            titulo=titulo,
+            año=anio,
+        )
+
+        # Actualizar datos si están vacíos
+        if not pub_obj.revista:
+            pub_obj.revista = revista
+        if not pub_obj.doi:
+            pub_obj.doi = doi
+
+        pub_obj.save()
+        pub_obj.fuente = "orcid"
+        pub_obj.save()
+
+        # Relación MANY-TO-MANY: agregar investigador
+        pub_obj.autores_investigadores.add(investigador)
+
+
+def sincronizar_publicaciones_scholar(investigador):
+    """
+    Sincroniza publicaciones desde Google Scholar usando la librería scholarly.
+    Mucho más estable que feedparser.
+    """
+
+    if not investigador.google_scholar:
+        return
+
+    url = investigador.google_scholar.strip()
+
+    # Extraemos ID
+    match = re.search(r"user=([\w-]+)", url)
+    if match:
+        scholar_id = match.group(1)
+    else:
+        scholar_id = url  # por si meten solo el ID
+
+    try:
+        # Obtener perfil
+        author = scholarly.search_author_id(scholar_id)
+        author = scholarly.fill(author, sections=["publications"])
+
+        for pub in author.get("publications", []):
+            titulo = pub.get("bib", {}).get("title", "Sin título")
+            link = pub.get("pub_url", "") or ""
+            autores = pub.get("bib", {}).get("author", "")
+            year = pub.get("bib", {}).get("pub_year", None)
+
+            try:
+                año = int(year)
+            except:
+                año = None
+
+            # Crear o recuperar publicación
+            pub_obj, created = Publicacion.objects.get_or_create(
+                titulo=titulo,
+                año=año if año else 0,
+                defaults={
+                    "fuente": "scholar",
+                    "autores_externos": autores,
+                    "link": link,
+                }
+            )
+
+            # Completar campos faltantes
+            if not pub_obj.autores_externos:
+                pub_obj.autores_externos = autores
+            if not pub_obj.link:
+                pub_obj.link = link
+
+            pub_obj.fuente = "scholar"
+            pub_obj.save()
+
+            # Vincular M2M
+            pub_obj.autores_investigadores.add(investigador)
+
+    except Exception as e:
+        print("ERROR SCHOLAR:", e)
+        return

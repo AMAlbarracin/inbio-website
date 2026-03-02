@@ -1,0 +1,38 @@
+/* static/css/density-fixes.css - REDUCE TODO UN 30% */
+:root {
+  --spacing-unit: 0.75rem; /* Reducido de 1rem */
+  --font-size-base: 0.875rem; /* 14px en lugar de 16px */
+  --line-height-base: 1.4; /* Más compacto */
+}
+
+/* Reducción drástica de espacios */
+.py-5 { padding-top: calc(var(--spacing-unit) * 2) !important; padding-bottom: calc(var(--spacing-unit) * 2) !important; }
+.py-4 { padding-top: calc(var(--spacing-unit) * 1.5) !important; padding-bottom: calc(var(--spacing-unit) * 1.5) !important; }
+.mb-5 { margin-bottom: calc(var(--spacing-unit) * 2) !important; }
+.mb-4 { margin-bottom: calc(var(--spacing-unit) * 1.5) !important; }
+
+/* Tipografía profesional compacta */
+body { font-size: var(--font-size-base); line-height: var(--line-height-base); }
+.display-4 { font-size: 2rem !important; } /* De 3.5rem */
+h1 { font-size: 1.75rem !important; }
+h2 { font-size: 1.5rem !important; }
+h3 { font-size: 1.25rem !important; }
+h4 { font-size: 1.125rem !important; }
+h5 { font-size: 1rem !important; }
+
+/* Navbar más denso */
+.navbar { padding-top: 0.5rem !important; padding-bottom: 0.5rem !important; }
+.navbar-brand { font-size: 1rem !important; }
+.nav-link { padding: 0.5rem 0.75rem !important; font-size: 0.85rem !important; }
+
+/* Tablas más densas */
+.table { font-size: 0.8rem !important; }
+.table td, .table th { padding: 0.5rem !important; }
+
+/* Tarjetas compactas */
+.card-bio { padding: 1rem !important; }
+.card-body { padding: 1rem !important; }
+
+/* Botones más pequeños */
+.btn-bio { padding: 0.5rem 1rem !important; font-size: 0.85rem !important; }
+.btn-action { padding: 2px 6px !important; font-size: 0.75rem !important; }

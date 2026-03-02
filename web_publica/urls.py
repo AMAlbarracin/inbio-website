@@ -14,7 +14,8 @@ urlpatterns = [
     
     #Seccion Equipo
     path('equipo/', views.equipo_lista_view, name='equipo'),
-    path('equipo/<int:pk>/', views.investigador_detalle_view, name='investigador_detalle'),
+    path('equipo/<int:id>/', views.investigador_detalle_view, name='investigador_detalle'),
+    
    
     #Seccion Publicaciones
     path('publicaciones/', views.publicaciones_lista_view, name='publicaciones'),
@@ -32,6 +33,8 @@ urlpatterns = [
     path('laboratorios/calendario/', views.reserva_calendario_view, name='reserva_calendario'),
     path('reserva-api/', views.reserva_api_view, name='reserva_api'),
     path('reserva-api/<int:pk>/', views.reserva_api_view, name='reserva_api_detail'),
+    path('laboratorios/<int:pk>/', views.laboratorio_detalle_view, name='laboratorio_detalle'),
+    path('laboratorios/<int:pk>/agregar-imagenes/', views.agregar_imagenes_laboratorio_view, name='agregar_imagenes_laboratorio'),
 
     # SECCIÓN SERVICIOS PARA EMPRESAS
     path('servicios/', views.servicios_lista_view, name='servicios'),
@@ -76,6 +79,8 @@ urlpatterns = [
     path('editar-proyecto/<int:pk>/', views.editar_proyecto_view, name='editar_proyecto'),
     
     # ELIMINACIÓN
+    path('noticia/imagen/eliminar/<int:imagen_id>/', views.eliminar_imagen_noticia, name='eliminar_imagen_noticia'),
+    path('noticia/video/eliminar/<int:video_id>/', views.eliminar_video_noticia, name='eliminar_video_noticia'),
     path('eliminar-noticia/<int:pk>/', views.eliminar_noticia_view, name='eliminar_noticia'),
     path('eliminar-publicacion/<int:pk>/', views.eliminar_publicacion_view, name='eliminar_publicacion'),
     path('eliminar-laboratorio/<int:pk>/', views.eliminar_laboratorio_view, name='eliminar_laboratorio'),
@@ -83,7 +88,7 @@ urlpatterns = [
     path('eliminar-evento/<int:pk>/', views.eliminar_evento_view, name='eliminar_evento'),
     path('eliminar-investigador/<int:pk>/', views.eliminar_investigador_view, name='eliminar_investigador'),
     path('eliminar-proyecto/<int:pk>/', views.eliminar_proyecto_view, name='eliminar_proyecto'),
-    
+    path('comentario/<int:pk>/eliminar/', views.eliminar_comentario, name='eliminar_comentario'),
     
 ]
 

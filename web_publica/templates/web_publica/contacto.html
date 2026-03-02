@@ -5,7 +5,7 @@
 {% block title %}Contacto - Instituto de Bioingeniería{% endblock %}
 
 {% block content %}
-<section class="py-5">
+<section class="py-3">
     <div class="container">
         <h1 class="text-center mb-5 fade-in">Contacto</h1>
         
@@ -38,38 +38,33 @@
                 <div class="card-bio p-4 h-100">
                     <h5>Información de Contacto</h5>
                     <hr>
-                    <p><i class="fas fa-map-marker-alt text-primary me-2"></i>Av. Universidad 1234, Ciudad</p>
-                    <p><i class="fas fa-phone text-primary me-2"></i>+54 11 4321-5678</p>
-                    <p><i class="fas fa-envelope text-primary me-2"></i>contacto@instituto.edu</p>
+                    <p><i class="fas fa-map-marker-alt text-primary me-2"></i>Av. Libertador Gral. San Martín Oste 1109, Primer Piso del Departamento de Electrónica y Automática<br> San Juan - Argentina, CP 5400, J5400ARL</p>
+                    <p><i class="fas fa-phone text-primary me-2"></i>+54 264 421-1700 Interno 313</p>
+                    <p><i class="fas fa-envelope text-primary me-2"></i>inbio.fi@inbio.unsj.edu.ar</p>
                     
                     <h6 class="mt-4">Horarios de atención</h6>
                     <ul class="list-unstyled text-muted">
-                        <li>Lunes a Viernes: 9:00 - 18:00</li>
-                        <li>Sábados: 9:00 - 13:00</li>
+                        <li>Lunes a Viernes: 9:00 - 18:00</li>                        
                     </ul>
                     
                     <h6 class="mt-4">Ubicación</h6>
-                    <div id="map" style="height: 200px; background: #f0f0f0; border-radius: 10px;"></div>
+                    
+                        <iframe 
+                            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3400.652575563549!2d-68.54448769999999!3d-31.533700800000005!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x9681403474a2d269%3A0xed2e8f0149c8f2c4!2sFacultad%20de%20Ingenier%C3%ADa%20UNSJ!5e0!3m2!1ses-419!2sar!4v1763136772835!5m2!1ses-419!2sar" 
+                            width="100%" 
+                            height="150" 
+                            style="border:0;" 
+                            allowfullscreen="" 
+                            loading="lazy"                             
+                            referrerpolicy="no-referrer-when-downgrade"
+                            background: #f0f0f0
+                            border-radius: 10px>
+                        </iframe>
                 </div>
             </div>
         </div>
     </div>
 </section>
 
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        // Inicializar mapa (coordenadas del instituto)
-        const map = L.map('map').setView([-34.6037, -58.3816], 15); // Buenos Aires ejemplo
-        
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution: '© OpenStreetMap contributors'
-        }).addTo(map);
-        
-        L.marker([-34.6037, -58.3816]).addTo(map)
-            .bindPopup('Instituto de Bioingeniería')
-            .openPopup();
-    });
-</script>
+
 {% endblock %}

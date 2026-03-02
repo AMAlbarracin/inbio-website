@@ -2,135 +2,585 @@
 {% load static %}
 
 {% block content %}
-<!-- Hero Section -->
+<style>
+
+/* === 2. CONTADORES MEJORADOS === */
+.contador-bloque {
+    padding: 4rem 0 !important;
+    background: linear-gradient(135deg, var(--primary-color) 0%, #0d213d 100%);
+    position: relative;
+}
+.contador-item {
+    padding: 1.5rem;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 16px;
+    backdrop-filter: blur(10px);
+    transition: var(--transition);
+}
+.contador-item:hover {
+    transform: translateY(-5px);
+    background: rgba(255, 255, 255, 0.08);
+}
+.contador-icono {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+    color: var(--secondary-color);
+    display: block;
+}
+.contador-numero {
+    font-size: 2.5rem !important;
+    font-weight: 700;
+    color: white;
+    margin-bottom: 0.25rem !important;
+    background: linear-gradient(to right, #fff, var(--accent-color));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+}
+.contador-texto {
+    color: var(--text-light);
+    font-size: 0.95rem;
+    opacity: 0.8;
+    margin: 0;
+}
+
+/* === 3. MOMENTOS CLAVE - CARDS HORIZONTALES === */
+.momentos-clave {
+    padding: 5rem 0;
+    background: var(--card-bg);
+    backdrop-filter: blur(10px);
+}
+.momentos-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1.5rem;
+    margin-top: 3rem;
+}
+.momento-card {
+    display: flex;
+    align-items: center;
+    padding: 1.5rem;
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 12px;
+    transition: var(--transition);
+}
+.momento-card:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--shadow-md);
+    border-color: var(--secondary-color);
+}
+.momento-icono {
+    font-size: 2.5rem;
+    margin-right: 1.5rem;
+    color: var(--secondary-color);
+    min-width: 50px;
+}
+.momento-fecha {
+    font-size: 0.85rem;
+    color: var(--secondary-color);
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+}
+.momento-titulo {
+    font-size: 1.1rem;
+    margin-bottom: 0.5rem;
+    
+}
+.momento-descripcion {
+    font-size: 0.85rem;    
+    line-height: 1.5;
+    margin: 0;
+}
+
+/* === 4. AUTORIDADES PREMIUM === */
+.autoridades-section {
+    padding: 5rem 0;
+    background: linear-gradient(to bottom, var(--primary-color), #0a1429);
+}
+.autoridades-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    gap: 2rem;
+    margin-top: 3rem;
+}
+.autoridad-card {
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 16px;
+    padding: 2rem;
+    text-align: center;
+    transition: var(--transition);
+    position: relative;
+    overflow: hidden;
+}
+.autoridad-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 4px;
+    background: linear-gradient(to right, var(--secondary-color), var(--accent-color));
+}
+.autoridad-card:hover {
+    transform: translateY(-8px);
+    box-shadow: var(--shadow-lg);
+}
+.autoridad-avatar {
+    width: 100px;
+    height: 100px;
+    object-fit: cover;
+    border-radius: 50%;
+    border: 4px solid var(--secondary-color);
+    margin: 0 auto 1rem;
+}
+.autoridad-nombre {
+    font-size: 1.2rem !important;
+    color: white;
+    font-weight: 600;
+    margin-bottom: 0.5rem !important;
+}
+.autoridad-titulo {    
+    color: white;
+    font-size: 0.9rem;
+    margin-bottom: 1rem;
+}
+.autoridad-badge {
+    background: #eef0f6;
+    color: var(--primary-color);
+    font-weight: 600;
+    padding: 0.4rem 1rem;
+    border-radius: 20px;
+    display: inline-block;
+    margin-bottom: 1rem;
+}
+.autoridad-links {
+    display: flex;
+    justify-content: center;
+    gap: 0.75rem;
+}
+
+
+.btn-contacto {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(100, 181, 246, 0.1);
+    color: var(--secondary-color);
+    transition: var(--transition);
+}
+.btn-contacto:hover {
+    background: var(--secondary-color);
+    color: var(--primary-color);
+    transform: translateY(-3px);
+}
+
+/* === 5. NOTICIAS CARRUSEL === */
+.noticias-section {
+    padding: 5rem 0;
+    background: var(--card-bg);
+}
+.carrusel-noticias {
+    position: relative;
+    max-width: 1200px;
+    margin: 3rem auto 0;
+    padding: 0 50px;
+}
+.carrusel-container {
+    display: flex;
+    gap: 1.5rem;
+    overflow-x: auto;
+    scroll-behavior: smooth;
+    padding: 1rem 0 2rem;
+    scrollbar-width: none; /* Firefox */
+}
+.carrusel-container::-webkit-scrollbar {
+    display: none; /* Chrome/Safari */
+}
+.noticia-slide {
+    flex: 0 0 350px;
+    max-width: 350px;
+}
+.noticia-card {
+    height: 100%;
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 12px;
+    overflow: hidden;
+    transition: var(--transition);
+}
+.noticia-card:hover {
+    transform: translateY(-8px);
+    box-shadow: var(--shadow-lg);
+    border-color: var(--secondary-color);
+}
+.noticia-imagen {
+    height: 200px;
+    object-fit: cover;
+    width: 100%;
+}
+.noticia-categoria {
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 0.4rem 0.8rem;
+    border-radius: 20px;
+    margin-bottom: 1rem;
+    display: inline-block;
+}
+.noticia-titulo {
+    font-size: 1.1rem;
+    line-height: 1.4;
+    color: white;
+    margin-bottom: 0.75rem;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+.noticia-resumen {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    line-height: 1.5;
+    margin-bottom: 1rem;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+.noticia-meta {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    margin-bottom: 1rem;
+}
+.carrusel-controls {
+    position: absolute;
+    top: 50%;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    pointer-events: none;
+}
+.carrusel-btn {
+    background: var(--secondary-color);
+    color: var(--primary-color);
+    border: none;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    cursor: pointer;
+    pointer-events: all;
+    transition: var(--transition);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+}
+.carrusel-btn:hover {
+    background: var(--accent-color);
+    transform: scale(1.1);
+}
+.carrusel-btn:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+}
+
+/* === 6. ÁREA PRIVADA MEJORADA === */
+.area-privada {
+    padding: 5rem 0;
+    background: linear-gradient(135deg, #0a192f 0%, #172a45 100%);
+}
+.area-card {
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 16px;
+    padding: 2.5rem 2rem;
+    transition: var(--transition);
+    height: 100%;
+    text-align: center;
+}
+.area-card:hover {
+    transform: translateY(-8px);
+    box-shadow: var(--shadow-lg);
+    border-color: var(--secondary-color);
+}
+.area-icono {
+    font-size: 3rem;
+    margin-bottom: 1.5rem;
+    color: var(--secondary-color);
+}
+.area-titulo {
+    color: white;
+    font-size: 1.3rem;
+    margin-bottom: 0.75rem;
+}
+.area-descripcion {
+    color: white;
+    font-size: 0.9rem;
+    margin: 0;
+}
+
+/* === ANIMACIONES Y EFECTOS === */
+.fade-in {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 0.6s ease, transform 0.6s ease;
+}
+.fade-in.visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+.seccion-titulo {
+    font-size: 2rem !important;
+    font-weight: 700;
+    position: relative;
+    display: inline-block;
+    padding-bottom: 1rem;
+    color: white;
+}
+.seccion-titulo-negro{
+    font-size: 2rem !important;
+    font-weight: 700;
+    position: relative;
+    display: inline-block;
+    padding-bottom: 1rem;
+    
+}
+.seccion-titulo::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 80px;
+    height: 4px;
+    background: linear-gradient(to right, var(--secondary-color), var(--accent-color));
+    border-radius: 2px;
+}
+
+
+
+/* === RESPONSIVE === */
+@media (max-width: 768px) {
+    .hero-title { font-size: 2.5rem !important; }
+    .hero-subtitle { font-size: 1rem; }
+    .contador-numero { font-size: 2rem !important; }
+    .noticia-slide { flex: 0 0 280px; max-width: 280px; }
+    .carrusel-noticias { padding: 0 40px; }
+    .autoridades-grid { grid-template-columns: 1fr; }
+    .seccion-titulo { font-size: 1.5rem !important; }
+}
+</style>
+
+<!-- 1. HERO PREMIUM -->
 <section class="hero-section">
-    <video autoplay muted loop>
+    <video class="hero-video" autoplay muted loop playsinline>
         <source src="{% static 'videos/lab-loop.mp4' %}" type="video/mp4">
     </video>
+    <div class="hero-overlay"></div>
     <div class="hero-content">
-        <h1 class="hero-title">Instituto de Bioingeniería</h1>
-        <p class="lead mb-4">Innovación en tecnologías de salud | Investigación de frontera | Formación de excelencia</p>
-        <a href="{% url 'web_publica:mision_vision' %}" class="btn-bio">Conoce más <i class="fas fa-arrow-right ms-2"></i></a>
+        <h1 class="hero-title fade-in">Instituto de Bioingeniería</h1>
+        <p class="hero-subtitle fade-in">Innovación en tecnologías de salud | Investigación de frontera | Formación de excelencia</p>
+        <a href="{% url 'web_publica:mision_vision' %}" class="btn-bio btn-hero fade-in">
+            Conoce más <i class="fas fa-arrow-right"></i>
+        </a>
     </div>
-    
-    <!-- Animación de partículas -->
-    <canvas id="particles-canvas"></canvas>
 </section>
 
-<!-- Contadores -->
-<section class="py-5">
+<!-- 2. CONTADORES MEJORADOS -->
+<section class="contador-bloque">
     <div class="container">
-        <div class="row text-center">
+        <div class="row text-center g-4">
             <div class="col-md-3 fade-in">
-                <h2 class="text-primary display-4" data-count="{{ contadores.proyectos }}">0</h2>
-                <p class="text-light">Proyectos Activos</p>
+                <div class="contador-item">
+                    <i class="fas fa-flask contador-icono"></i>
+                    <h3 class="contador-numero" data-count="{{ contadores.proyectos }}">0</h3>
+                    <p class="contador-texto">Proyectos Activos</p>
+                </div>
             </div>
             <div class="col-md-3 fade-in">
-                <h2 class="text-primary display-4" data-count="{{ contadores.publicaciones }}">0</h2>
-                <p class="text-light">Publicaciones 2024</p>
+                <div class="contador-item">
+                    <i class="fas fa-file-alt contador-icono"></i>
+                    <h3 class="contador-numero" data-count="{{ contadores.publicaciones }}">0</h3>
+                    <p class="contador-texto">Publicaciones</p>
+                </div>
             </div>
             <div class="col-md-3 fade-in">
-                <h2 class="text-primary display-4" data-count="{{ contadores.investigadores }}">0</h2>
-                <p class="text-light">Investigadores</p>
+                <div class="contador-item">
+                    <i class="fas fa-users contador-icono"></i>
+                    <h3 class="contador-numero" data-count="{{ contadores.investigadores }}">0</h3>
+                    <p class="contador-texto">Investigadores</p>
+                </div>
             </div>
             <div class="col-md-3 fade-in">
-                <h2 class="text-primary display-4">15</h2>
-                <p class="text-light">Años de Trayectoria</p>
+                <div class="contador-item">
+                    <i class="fas fa-calendar-alt contador-icono"></i>
+                    <h3 class="contador-numero" data-count="{{ contadores.anios_trayectoria }}">0</h3>
+                    <p class="contador-texto">Años de Trayectoria</p>
+                </div>
             </div>
         </div>
     </div>
 </section>
 
-<!-- Fechas Destacadas -->
-<section class="py-5">
+<!-- 3. MOMENTOS CLAVE -->
+{% if fechas_destacadas %}
+<section class="momentos-clave">
     <div class="container">
-        <h2 class="text-center mb-5 fade-in">Momentos Clave</h2>
-        <div class="row">
+        <h2 class="seccion-titulo-negro text-center fade-in">Momentos Clave</h2>
+        <p class="text-center mb-5 fade-in">Hitos importantes en nuestra historia</p>
+
+        <!-- BOTÓN A HISTORIA COMPLETA -->
+        <a href="{% url 'web_publica:historia' %}" class="btn btn-outline-primary btn-sm mt-3">
+            Ver historia completa <i class="fas fa-arrow-right ms-1"></i>
+        </a>
+        
+        <div class="momentos-grid">
             {% for fecha in fechas_destacadas %}
-            <div class="col-md-6 fade-in">
-                <div class="card-bio">
-                    <span class="badge bg-primary">{{ fecha.fecha|date:"Y" }}</span>
-                    <h4 class="mt-2">{{ fecha.titulo }}</h4>
-                    <p>{{ fecha.descripcion|truncatewords:20 }}</p>
+            <div class="momento-card fade-in">
+                <i class="fas fa-star momento-icono"></i>
+                <div class="momento-contenido">
+                    <div class="momento-fecha">{{ fecha.fecha|date:"Y" }}</div>
+                    <h6 class="momento-titulo">{{ fecha.titulo }}</h6>
+                    <p class="momento-descripcion">{{ fecha.descripcion|truncatewords:12 }}</p>
                 </div>
             </div>
             {% endfor %}
         </div>
     </div>
 </section>
+{% endif %}
 
-<!-- Equipo Destacado -->
-<section class="py-5" style="background: rgba(255,255,255,0.02);">
+<!-- 4. AUTORIDADES -->
+<section class="autoridades-section">
     <div class="container">
-        <h2 class="text-center mb-5 fade-in">Autoridades</h2>
-        <div class="row">
+        <h2 class="seccion-titulo text-center fade-in">Autoridades</h2>
+        <div class="autoridades-grid">
             {% for miembro in miembros_directiva %}
-            <div class="col-md-6 fade-in">
-                <div class="card-bio text-center">
-                    <img src="{{ miembro.foto.url }}" alt="{{ miembro.nombre_completo }}" class="mb-3">
-                    <h4>{{ miembro.nombre_completo }}</h4>
-                    <p class="text-muted">{{ miembro.titulo_Academico }}</p>
-                    <a href="mailto:{{ miembro.email }}" class="btn-bio btn-sm">Contactar</a>
+            <div class="autoridad-card fade-in">
+                <img src="{{ miembro.foto.url }}" alt="{{ miembro.nombre_completo }}" class="autoridad-avatar">
+                <h5 class="autoridad-nombre">{{ miembro.nombre_completo }}</h5>
+                <p class="autoridad-titulo">{{ miembro.titulo_Academico }}</p>
+                <span class="autoridad-badge">{{ miembro.get_categoria_display }}</span>
+                <div class="autoridad-links">
+                    <a href="mailto:{{ miembro.email }}" class="btn-contacto" title="Email">
+                        <i class="fas fa-envelope"></i>
+                    </a>
+                    {% if miembro.linkedin %}
+                    <a href="{{ miembro.linkedin }}" target="_blank" class="btn-contacto" title="LinkedIn">
+                        <i class="fab fa-linkedin"></i>
+                    </a>
+                    {% endif %}                   
+                    
+                    <!-- Botón Ver Perfil -->
+                    <a href="{% url 'web_publica:investigador_detalle' miembro.id %}" target="_blank" class="btn-contacto" title="Ver Perfil">
+                        <i class="fa-solid fa-user"></i>
+                    </a>                    
                 </div>
+            </div>
+            {% empty %}
+            <div class="col-12 text-center py-4">
+                <i class="fas fa-users-cog fa-3x text-muted mb-3"></i>
+                <p class="text-muted">No hay autoridades cargadas</p>
             </div>
             {% endfor %}
         </div>
     </div>
 </section>
 
-<!-- En templates/web_publica/home.html, antes del footer -->
-<section class="py-5" style="background: rgba(255,255,255,0.02);">
+<!-- 5. NOTICIAS CARRUSEL -->
+<section class="noticias-section">
     <div class="container">
-        <h2 class="text-center mb-5 fade-in">Últimas Noticias</h2>
-        <div class="row">
-            {% for noticia in destacadas %}
-            <div class="col-md-4 fade-in">
-                <div class="card-bio text-center h-100">
-                    <img src="{% if noticia.imagen %}{{ noticia.imagen.url }}{% else %}{% static 'images/default.jpg' %}{% endif %}" class="card-img-top" alt="{{ noticia.titulo }}">
-                    <div class="card-body">
-                        <h5>{{ noticia.titulo }}</h5>
-                        <p>{{ noticia.resumen|truncatewords:15 }}</p>
-                        <a href="{% url 'web_publica:noticia_detalle' noticia.pk %}" class="btn-bio btn-sm">Ver más</a>
+        <h2 class="seccion-titulo-negro text-center fade-in">Últimas Noticias</h2>
+        
+        {% if noticias_ultimas %}
+        <div class="carrusel-noticias">
+            <div class="carrusel-container" id="carruselNoticias">
+                {% for noticia in noticias_ultimas %}
+                <div class="noticia-slide fade-in">
+                    <div class="card-bio noticia-card">
+                        {% if noticia.imagen %}
+                        <img src="{{ noticia.imagen.url }}" class="noticia-imagen" alt="{{ noticia.titulo }}">
+                        {% else %}
+                        <div class="bg-light d-flex align-items-center justify-content-center noticia-imagen">
+                            <i class="fas fa-newspaper fa-3x text-muted"></i>
+                        </div>
+                        {% endif %}
+                        <div class="card-body">
+                            <span class="noticia-categoria badge bg-{{ noticia.categoria|lower|yesno:'info,primary' }}">
+                                {{ noticia.get_categoria_display }}
+                            </span>
+                            <h6 class="noticia-titulo">{{ noticia.titulo }}</h6>
+                            <p class="noticia-resumen">{{ noticia.resumen|truncatewords:15 }}</p>
+                            <small class="noticia-meta d-block mb-2">
+                                <i class="fas fa-calendar me-1"></i>{{ noticia.fecha_noticia|date:"d/m/Y" }}
+                            </small>
+                            <a href="{% url 'web_publica:noticia_detalle' noticia.pk %}" class="btn-bio btn-bio-xs">
+                                Leer más <i class="fas fa-arrow-right ms-1"></i>
+                            </a>
+                        </div>
                     </div>
                 </div>
+                {% endfor %}
             </div>
-            {% endfor %}
+            <div class="carrusel-controls">
+                <button class="carrusel-btn" id="btnPrev" aria-label="Anterior">
+                    <i class="fas fa-chevron-left"></i>
+                </button>
+                <button class="carrusel-btn" id="btnNext" aria-label="Siguiente">
+                    <i class="fas fa-chevron-right"></i>
+                </button>
+            </div>
         </div>
-        <div class="text-center mt-4 fade-in">
-            <a href="{% url 'web_publica:noticias' %}" class="btn-bio">
-                Ver todas las noticias <i class="fas fa-arrow-right ms-2"></i>
+        <div class="text-center mt-4">
+            <a href="{% url 'web_publica:noticias' %}" class="btn-bio btn-sm">
+                <i class="fas fa-newspaper me-1"></i>Ver todas las noticias
             </a>
         </div>
+        {% else %}
+        <div class="text-center py-5 fade-in">
+            <i class="fas fa-inbox fa-3x text-muted mb-3"></i>
+            <p class="text-muted">No hay noticias publicadas</p>
+            {% if request.user.is_authenticated %}
+            <a href="{% url 'web_publica:cargar_noticia' %}" class="btn-bio">
+                <i class="fas fa-plus me-1"></i> Cargar primera noticia
+            </a>
+            {% endif %}
+        </div>
+        {% endif %}
     </div>
 </section>
 
-<!-- ACCESO RÁPIDO A FUNCIONES PRIVADAS -->
+<!-- 6. ÁREA PRIVADA -->
 {% if request.user.is_authenticated %}
-<section class="py-5" style="background: linear-gradient(135deg, #0a192f 0%, #172a45 100%);">
+<section class="area-privada">
     <div class="container">
-        <h2 class="text-center mb-5 fade-in">
-            <i class="fas fa-user-lock text-primary"></i> Mi Área Privada
+        <h2 class="seccion-titulo text-center mb-5 fade-in">
+            <i class="fas fa-user-lock text-primary me-2"></i> Mi Área Privada
         </h2>
-        <div class="row text-center">
+        <div class="row g-4">
             <div class="col-md-4 fade-in">
-                <a href="{% url 'web_publica:dashboard' %}" class="card-bio text-decoration-none d-block h-100">
-                    <i class="fas fa-tachometer-alt fa-3x text-primary mb-3"></i>
-                    <h4>Dashboard</h4>
-                    <p class="text-muted">Reservas y publicaciones</p>
+                <a href="{% url 'web_publica:dashboard' %}" class="area-card text-decoration-none d-block">
+                    <i class="fas fa-tachometer-alt area-icono"></i>
+                    <h4 class="area-titulo">Dashboard</h4>
+                    <p class="area-descripcion">Reservas y publicaciones</p>
                 </a>
             </div>
             <div class="col-md-4 fade-in">
-                <a href="{% url 'web_publica:reserva_calendario' %}" class="card-bio text-decoration-none d-block h-100">
-                    <i class="fas fa-calendar-plus fa-3x text-primary mb-3"></i>
-                    <h4>Reservar Laboratorio</h4>
-                    <p class="text-muted">Calendario interactivo</p>
+                <a href="{% url 'web_publica:reserva_calendario' %}" class="area-card text-decoration-none d-block">
+                    <i class="fas fa-calendar-plus area-icono"></i>
+                    <h4 class="area-titulo">Reservar Laboratorio</h4>
+                    <p class="area-descripcion">Calendario interactivo</p>
                 </a>
             </div>
             <div class="col-md-4 fade-in">
-                <a href="{% url 'web_publica:estadisticas' %}" class="card-bio text-decoration-none d-block h-100">
-                    <i class="fas fa-chart-bar fa-3x text-warning mb-3"></i>
-                    <h4>Estadísticas</h4>
-                    <p class="text-muted">Reportes institucionales</p>
+                <a href="{% url 'web_publica:estadisticas' %}" class="area-card text-decoration-none d-block">
+                    <i class="fas fa-chart-bar area-icono"></i>
+                    <h4 class="area-titulo">Estadísticas</h4>
+                    <p class="area-descripcion">Reportes institucionales</p>
                 </a>
             </div>
         </div>
@@ -138,44 +588,122 @@
 </section>
 {% else %}
 <!-- CTA PARA INICIAR SESIÓN -->
-<section class="py-5">
+<section class="py-5" style="background: var(--card-bg);">
     <div class="container text-center">
-        <h2 class="fade-in">¿Eres miembro del instituto?</h2>
-        <p class="fade-in">Accede a funciones exclusivas</p>
-        <a href="{% url 'web_publica:login' %}" class="btn-bio btn-lg fade-in">
-            <i class="fas fa-user-lock me-2"></i>Iniciar Sesión
+        <h2 class="seccion-titulo fade-in mb-3">¿Eres miembro del instituto?</h2>
+        <p class="text-muted mb-4 fade-in">Accede a funciones exclusivas para el equipo</p>
+        <a href="{% url 'web_publica:login' %}" class="btn-bio btn-bio-lg fade-in">
+            <i class="fas fa-user-lock me-2"></i> Iniciar Sesión
         </a>
     </div>
 </section>
 {% endif %}
 
-<script type="module" src="{% static 'js/hero-animation.js' %}"></script>
+<!-- SCRIPTS -->
 <script>
-// Animación de contadores
 document.addEventListener('DOMContentLoaded', function() {
-    const counters = document.querySelectorAll('[data-count]');
-    counters.forEach(counter => {
-        const target = parseInt(counter.getAttribute('data-count'));
-        const duration = 2000;
-        const step = target / (duration / 16);
-        let current = 0;
-        
-        const timer = setInterval(() => {
-            current += step;
-            if (current >= target) {
-                counter.textContent = target;
-                clearInterval(timer);
-            } else {
-                counter.textContent = Math.floor(current);
+    // Animación de contadores
+    const animateCounters = () => {
+        const counters = document.querySelectorAll('.contador-numero[data-count]');
+        counters.forEach(counter => {
+            const target = parseInt(counter.getAttribute('data-count'));
+            if (target > 0 && !counter.classList.contains('animated')) {
+                const duration = 2000;
+                const step = target / (duration / 16);
+                let current = 0;
+                counter.classList.add('animated');
+                
+                const timer = setInterval(() => {
+                    current += step;
+                    if (current >= target) {
+                        counter.textContent = target > 999 ? (target/1000).toFixed(1) + 'k' : target;
+                        clearInterval(timer);
+                    } else {
+                        const value = Math.floor(current);
+                        counter.textContent = value > 999 ? (value/1000).toFixed(1) + 'k' : value;
+                    }
+                }, 16);
             }
-        }, 16);
-    });
+        });
+    };
+
+    // Intersection Observer para animaciones
+    const observerOptions = { threshold: 0.3, rootMargin: '0px 0px -100px 0px' };
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('visible');
+                if (entry.target.classList.contains('contador-bloque')) {
+                    setTimeout(animateCounters, 300);
+                }
+            }
+        });
+    }, observerOptions);
     
-    // Partículas básicas
-    const canvas = document.getElementById('particles-canvas');
-    if (canvas) {
-        // Implementar con particles.js o similar
+    document.querySelectorAll('.fade-in, .contador-bloque').forEach(el => observer.observe(el));
+
+    // Carrusel de Noticias
+    const carrusel = document.getElementById('carruselNoticias');
+    const btnPrev = document.getElementById('btnPrev');
+    const btnNext = document.getElementById('btnNext');
+    
+    if (carrusel && btnPrev && btnNext) {
+        const scrollAmount = 370; // Ancho de slide + gap
+        
+        btnNext.addEventListener('click', () => {
+            carrusel.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+        });
+        
+        btnPrev.addEventListener('click', () => {
+            carrusel.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
+        });
+        
+        // Actualizar estado de botones
+        const updateButtons = () => {
+            btnPrev.disabled = carrusel.scrollLeft <= 0;
+            btnNext.disabled = carrusel.scrollLeft >= (carrusel.scrollWidth - carrusel.clientWidth - 10);
+        };
+        
+        carrusel.addEventListener('scroll', updateButtons);
+        updateButtons();
+        
+        // Touch scroll para móvil
+        let isDown = false;
+        let startX;
+        let scrollLeft;
+        
+        carrusel.addEventListener('mousedown', (e) => {
+            isDown = true;
+            startX = e.pageX - carrusel.offsetLeft;
+            scrollLeft = carrusel.scrollLeft;
+        });
+        
+        carrusel.addEventListener('mouseleave', () => {
+            isDown = false;
+        });
+        
+        carrusel.addEventListener('mouseup', () => {
+            isDown = false;
+        });
+        
+        carrusel.addEventListener('mousemove', (e) => {
+            if (!isDown) return;
+            e.preventDefault();
+            const x = e.pageX - carrusel.offsetLeft;
+            const walk = (x - startX) * 2;
+            carrusel.scrollLeft = scrollLeft - walk;
+        });
     }
+
+    // Efecto hover en cards
+    document.querySelectorAll('.card-bio').forEach(card => {
+        card.addEventListener('mouseenter', function() {
+            this.style.transform = 'translateY(-8px)';
+        });
+        card.addEventListener('mouseleave', function() {
+            this.style.transform = 'translateY(0)';
+        });
+    });
 });
 </script>
 {% endblock %}

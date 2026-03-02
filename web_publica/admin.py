@@ -90,8 +90,8 @@ class ReservaAdmin(admin.ModelAdmin):
 
 @admin.register(Servicio)
 class ServicioAdmin(admin.ModelAdmin):
-    list_display = ('nombre', 'precio_desde')
-    search_fields = ('nombre', 'descripcion')
+    list_display = ('nombre', 'laboratorio', 'activo')
+    search_fields = ('nombre', 'descripcion', 'laboratorio__nombre')
 
 @admin.register(SolicitudServicio)
 class SolicitudServicioAdmin(admin.ModelAdmin):
@@ -99,3 +99,19 @@ class SolicitudServicioAdmin(admin.ModelAdmin):
     list_filter = ('estado', 'servicio')
     search_fields = ('empresa', 'contacto', 'email')
     
+@admin.register(Proyecto)
+class ProyectoAdmin(admin.ModelAdmin):
+    list_display = ('titulo', 'tipo', 'estado', 'responsable', 'activo')
+    list_filter = ('tipo', 'estado', 'activo')
+    search_fields = ('titulo', 'descripcion', 'responsable__nombre', 'responsable__apellido')
+
+@admin.register(Equipamiento)
+class EquipamientoAdmin(admin.ModelAdmin):  
+    list_display = ('nombre', 'descripcion', 'imagen_thumbnail')
+    search_fields = ('nombre', 'descripcion')
+    
+    def imagen_thumbnail(self, obj):
+        if obj.imagen:
+            return format_html('<img src="{}" width="60"/>', obj.imagen.url)
+        return format_html('<i class="fas fa-box fa-2x text-gray-400"></i>')
+    imagen_thumbnail.short_description = 'Imagen'

@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'crispy_forms',
     'crispy_bootstrap5',
+    #'captcha',
     #'core',
     'web_publica',
     'rest_framework',
@@ -172,3 +173,15 @@ EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'  # Temporal
 # EMAIL_USE_TLS = True
 # EMAIL_HOST_USER = 'tu-email@gmail.com'
 # EMAIL_HOST_PASSWORD = 'tu-contraseña-de-app'
+
+CACHES = {
+    "default": {
+        "BACKEND": "django.core.cache.backends.locmem.LocMemCache",
+        "LOCATION": "unique-snowflake",
+    }
+}
+
+# Google reCAPTCHA v2 Configuration
+RECAPTCHA_PUBLIC_KEY = '6Lc1NA0sAAAAANd-1unIH7NkQTwq8GSfuHTsxIJS'  # Site Key
+RECAPTCHA_PRIVATE_KEY = '6Lc1NA0sAAAAAJk_39CvB2bEMOmBK_haHIkW7ZAr'   # Secret Key
+RECAPTCHA_REQUIRED_SCORE = 0.85  # Opcional: para v3, no necesario en v2

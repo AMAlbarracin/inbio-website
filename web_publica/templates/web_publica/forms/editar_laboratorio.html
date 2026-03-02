@@ -7,17 +7,52 @@
 <section class="py-5">
     <div class="container">
         <div class="row justify-content-center">
-            <div class="col-lg-8">
+            <div class="col-lg-10">
                 <div class="card-bio p-4">
+
                     <h2 class="text-center mb-4">
                         <i class="fas fa-edit text-primary"></i><br>
                         {{ titulo }}
                     </h2>
-                    
+
                     <form method="post" enctype="multipart/form-data">
                         {% csrf_token %}
-                        {{ form|crispy }}
-                        
+
+                        <!-- ============================ -->
+                        <!-- DATOS DEL LABORATORIO -->
+                        <!-- ============================ -->
+                        <div class="mb-4">
+                            <h4 class="mb-3"><i class="fas fa-flask text-primary"></i> Datos del laboratorio</h4>
+                            {{ form|crispy }}
+                        </div>
+
+                        <hr class="my-4">
+
+                        <!-- ============================ -->
+                        <!-- EQUIPAMIENTO (FORMSET) -->
+                        <!-- ============================ -->
+                        <div class="mb-4">
+                            <h4 class="mb-3"><i class="fas fa-tools text-primary"></i> Equipamiento del laboratorio</h4>
+
+                            {{ formset.management_form }}
+
+                            <div class="row g-3">
+                                {% for f in formset %}
+                                    <div class="col-md-6">
+                                        <div class="card p-3 shadow-sm border-0 rounded-3">
+                                            <h5 class="mb-3 text-secondary">Equipamiento {{ forloop.counter }}</h5>
+                                            {{ f|crispy }}
+                                        </div>
+                                    </div>
+                                {% endfor %}
+                            </div>
+
+                            <p class="text-muted mt-2">Podés agregar nuevos equipos o eliminar existentes marcando la casilla "Eliminar".</p>
+                        </div>
+
+                        <hr class="my-4">
+
+                        <!-- BOTONES -->
                         <div class="row mt-4">
                             <div class="col-md-6">
                                 <button type="submit" class="btn-bio w-100">
@@ -30,7 +65,9 @@
                                 </a>
                             </div>
                         </div>
+
                     </form>
+
                 </div>
             </div>
         </div>

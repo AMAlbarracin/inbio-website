@@ -1,58 +1,701 @@
 {% extends 'web_publica/base_publica.html' %}
 {% block content %}
-<section class="py-5">
+
+<style>
+/* ===== SISTEMA DE DISEÑO COMPLETO ===== */
+
+.badge-resultados {
+    background: rgba(255,255,255,0.15);
+    backdrop-filter: blur(12px);
+    Efecto vidrio */
+    -webkit-backdrop-filter: blur(12px);    /* Para Safari */
+    color: white;
+    padding: 12px 28px;
+    border-radius: 50px;
+    font-weight: 700;
+    border: 1px solid rgba(255,255,255,0.3);
+    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+    position: relative;
+    z-index: 1;
+}
+
+/* GRÁFICOS: Fondo diferenciado */
+.seccion-graficos {
+    background: rgba(169, 171, 173, 0.13); /* Fondo gris claro para separar */
+    padding: 2rem;
+    margin-bottom: 50px;
+    position: relative;
+    border-radius: 16px;
+    box-shadow: var(--shadow-md);
+    transition: var(--transition);
+}
+.card-graficos {
+    color: var(--secondary-color);    
+    background: white;
+    border-radius: 16px;
+    padding: 2rem;
+    box-shadow: var(--shadow-md);
+    transition: var(--transition);
+    border: 1px solid rgba(31, 48, 75, 0.05);
+    position: relative;
+    overflow: hidden;
+
+}
+.card-graficos::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 100px;
+    height: 100px;
+    background: var(--secondary-color);
+    opacity: 0.05;
+    border-radius: 0 0 0 100%;
+}
+
+.card-graficos h5 {
+    color: var(--color-primario);
+    font-weight: 700;
+    margin-bottom: 30px;
+    font-size: 1.5rem;
+}
+
+/* FILTROS: Sticky mejorado */
+.filtros-card {
+    color: white;
+    background: var(--primary-color);
+    border-radius: 14px;
+    box-shadow: var(--shadow-md);
+    border: 1px solid var(--secondary-color);
+    position: sticky;
+    top: 20px;
+    transition: var(--transition);
+    overflow: hidden;
+}
+.filtros-card::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 4px;
+    background: var(--color-secundario);
+}
+
+.filtros-card:hover {
+    transform: translateY(-3px);            /* Más elevación */
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
+}
+
+/* PUBLICACIONES: Tarjetas mejoradas */
+.publicacion-card {
+    color: var(--texto-principal);
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 3px 10px var(--color-shadow);
+    border: 1px solid var(--color-borde);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+    margin-bottom: 24px; 
+}
+
+.publicacion-card::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 4px;
+    background: var(--color-secundario);
+    opacity: 0;
+    transition: all 0.3s ease;
+}
+
+.publicacion-card:hover {
+    transform: translateY(-8px) scale(1.01);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+    border-color: var(--color-secundario);
+}
+
+.publicacion-card:hover::before {
+    opacity: 1;
+}
+
+/* Iconos más vibrantes */
+.icono-tipo-pub {
+    width: 60px;
+    height: 60px;
+    border-radius: 12px;
+    background: linear-gradient(135deg, #3b82f6, #1e3a8a);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 26px;
+    box-shadow: 0 4px 10px rgba(59, 130, 246, 0.3);
+}
+/* 
+ * Modo compacto: Versión reducida
+ * padding: Menor espacio interno
+ * font-size: Texto más pequeño
+ */
+.modo-compacto {
+    padding: 18px !important;
+    margin-bottom: 12px !important;
+}
+.modo-compacto h4 {
+    font-size: 1.1rem !important;
+}
+.modo-compacto .icono-tipo-pub {
+    width: 42px !important;
+    height: 42px !important;
+    font-size: 18px !important;
+}
+
+/* Textos con mejor jerarquía */
+.pub-titulo {
+    color: var(--color-primario);
+    font-weight: 700;
+    font-size: 1.25rem;
+    line-height: 1.4;
+}
+.pub-titulo:hover {
+    color: var(--color-secundario) !important;
+}
+.publicacion-card .row {
+    padding: 28px;
+    position: relative;
+    z-index: 1;
+}
+
+/* Mejorar badges */
+.badge {
+    font-weight: 600 !important;
+    padding: 6px 12px !important;
+    border-radius: 8px !important;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+.badge.bg-primary {
+    background: linear-gradient(135deg, #3b82f6, #2563eb) !important;
+}
+.badge.bg-secondary {
+    background: linear-gradient(135deg, #64748b, #475569) !important;
+}
+
+/* Botones más modernos */
+.btn {
+    border-radius: 8px;
+    font-weight: 600;
+    transition: all 0.2s ease;
+}
+.btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+/* Filtros activos más visibles */
+.active-filters {
+    background: #f1f5ff;
+    padding: 15px;
+    border-radius: 12px;
+    border: 1px solid var(--color-borde);
+    margin-bottom: 25px;
+}
+.filter-tag {
+    background: white;
+    color: var(--color-primario);
+    padding: 6px 16px;
+    border-radius: 50px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    border: 1px solid var(--color-borde);
+    box-shadow: 0 2px 4px var(--color-sombra);
+}
+
+/* Efecto de entrada suave */
+.fade-in {
+    animation: fadeIn 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Mejorar apariencia de checkboxes y radios */
+.form-check-input:checked {
+    background-color: var(--color-secundario);
+    border-color: var(--color-secundario);
+}
+
+.form-check-input:focus {
+    box-shadow: 0 0 0 0.2rem rgba(59, 130, 246, 0.25);
+}
+
+/* Scroll personalizado para autores */
+.autores-filtro-container::-webkit-scrollbar {
+    width: 6px;
+}
+.autores-filtro-container::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 3px;
+}
+.autores-filtro-container::-webkit-scrollbar-thumb {
+    background: var(--color-primario);
+    border-radius: 3px;
+}
+
+</style>
+
+<!-- ===== HERO ===== -->
+<section class="hero-section">
+    <!-- Imagen de fondo del hero -->
+        <img src="/static/img/hero_inbio.jpg" class="hero-bg-img" alt="Imagen de fondo INBIO">
+    <div class="hero-overlay"></div> 
+    <div class="hero-content text-center">
+        <h1 class="hero-title display-5">Publicaciones Científicas</h1>
+        <p class="hero-subtitle lead">Producción científica de nuestros investigadores</p>
+        <span class="badge-resultados">
+            <i class="fas fa-database me-2"></i>{{ total_publicaciones }} resultados
+        </span>
+    </div>
+</section>
+
+<!-- ===== GRÁFICOS CON VALORES VISIBLES ===== -->
+<section class="seccion-graficos fade-in">
     <div class="container">
-        <h1 class="text-center mb-5 fade-in">Publicaciones Científicas</h1>
-        
-        <!-- Filtros -->
-        <div class="row mb-4">
-            <div class="col-md-6 fade-in">
-                <select class="form-select" onchange="location = this.value;">
-                    <option value="">Filtrar por tipo</option>
-                    {% for codigo, nombre in tipos %}
-                    <option value="?tipo={{ codigo }}" {% if tipo_actual == codigo %}selected{% endif %}>{{ nombre }}</option>
-                    {% endfor %}
-                </select>
-            </div>
-            <div class="col-md-6 fade-in">
-                <select class="form-select" onchange="location = this.value;">
-                    <option value="">Filtrar por año</option>
-                    {% for año_disponible in años %}
-                    <option value="?año={{ año_disponible }}" {% if año_actual == año_disponible|stringformat:"s" %}selected{% endif %}>{{ año_disponible }}</option>
-                    {% endfor %}
-                </select>
-            </div>
-        </div>
-        
-        <!-- Lista de publicaciones -->
-        <div class="row">
-            {% for pub in publicaciones %}
-            <div class="col-md-12 fade-in">
-                <div class="card-bio mb-3">
-                    <span class="badge bg-primary">{{ pub.get_tipo_display }}</span>
-                    <span class="badge bg-secondary">{{ pub.año }}</span>
-                    {% if pub.destacada %}<span class="badge bg-warning text-dark">⭐ Destacada</span>{% endif %}
-                    
-                    <h4 class="mt-2">
-                        <a href="{% url 'web_publica:publicacion_detalle' pub.pk %}" class="text-decoration-none">
-                            {{ pub.titulo }}
-                        </a>
-                    </h4>
-                    <p class="text-muted mb-1">{{ pub.autores }}</p>
-                    {% if pub.revista %}
-                    <p class="mb-0"><strong>{{ pub.revista }}</strong></p>
-                    {% endif %}
-                    {% if pub.doi %}
-                    <a href="{{ pub.doi }}" target="_blank" class="btn btn-sm btn-outline-primary mt-2">
-                        <i class="fas fa-external-link-alt me-1"></i>DOI
-                    </a>
-                    {% endif %}
+        <div class="card card-graficos p-4">
+            <h5 class="fw-bold mb-4">
+                <i class="fas fa-chart-line me-2"></i>Análisis de la producción científica
+            </h5>
+            
+            <!-- Leyenda explicativa -->
+            <div class="row mb-4">
+                <div class="col-12">
+                    <div class="alert alert-info" style="background: #e0f2fe; border: none; border-radius: 12px;">
+                        <i class="fas fa-info-circle me-2"></i>
+                        <strong>Datos actualizados:</strong> Mostrando estadísticas de <span class="fw-bold">{{ total_publicaciones }}</span> publicaciones
+                    </div>
                 </div>
             </div>
-            {% empty %}
-            <p class="text-center text-muted">No hay publicaciones registradas.</p>
-            {% endfor %}
+            
+            <div class="row align-items-center">
+                <!-- Gráfico de barras -->
+                <div class="col-md-6 mb-4 mb-md-0">
+                    <div class="text-center mb-3">
+                        <h6 class="fw-bold" style="color: var(--color-primario);">
+                            <i class="fas fa-calendar-alt me-2"></i>Publicaciones por año
+                        </h6>
+                    </div>
+                    <canvas id="graficoAños" style="max-height: 300px; min-height: 250px;"></canvas>
+                </div>
+                             
+
+                <!-- Gráfico de dona -->
+                <div class="col-md-6">
+                    <div class="text-center mb-3">
+                        <h6 class="fw-bold" style="color: var(--color-primario);">
+                            <i class="fas fa-chart-pie me-2"></i>Distribución por tipo
+                        </h6>
+                    </div>
+                    <canvas id="graficoTipos" style="max-height: 300px; min-height: 250px;"></canvas>
+                </div>
+            </div>
+            
+            <!-- Resumen de estadísticas -->
+            <div class="row mt-4">
+                <div class="col-12">
+                    <div class="d-flex justify-content-around flex-wrap gap-3">
+                        {% for item in datos_graficos.por_tipo.labels %}
+                        <div class="text-center p-3 bg-light rounded" style="min-width: 120px;">
+                            <div class="fs-4 fw-bold" style="color: var(--color-secundario);">
+                                {{ datos_graficos.por_tipo.data.forloop.counter0 }}
+                            </div>
+                            <div class="small text-muted">{{ item }}</div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </section>
+
+<!-- ===== CONTENIDO PRINCIPAL ===== -->
+<div class="container pb-5 fade-in">
+    <div class="row g-4">
+        
+        <!-- FILTROS -->
+        <div class="col-lg-3">
+            <form method="GET" class="filtros-form">
+                <div class="card shadow-md filtros-card">
+                    <div class="card-body">
+                        <h5 class="fw-bold mb-3">
+                            <i class="fas fa-filter me-2"></i>Filtrar
+                        </h5>
+                        
+                        <button class="btn btn-outline-secondary d-lg-none w-100 mb-3" 
+                                type="button" data-bs-toggle="collapse" data-bs-target="#filtrosPanel">
+                            <i class="fas fa-chevron-down me-2"></i>Mostrar filtros
+                        </button>
+                        
+                        <div class="collapse d-lg-block" id="filtrosPanel">
+                            
+                            <!-- BÚSQUEDA -->
+                            <div class="mb-3">
+                                <label class="fw-semibold d-block mb-2">Buscar</label>
+                                <input type="text" name="q" value="{{ query }}" class="form-control form-control-sm"
+                                       placeholder="Título, autor, revista...">
+                            </div>
+
+                            <!-- TIPO -->
+                            <div class="mb-3">
+                                <label class="fw-semibold d-block mb-2">Tipo</label>
+                                <select name="tipo" class="form-select form-select-sm">
+                                    <option value="">Todos</option>
+                                    {% for codigo, nombre in tipos %}
+                                    <option value="{{ codigo }}" {% if tipo_actual == codigo %}selected{% endif %}>
+                                        {{ nombre }}
+                                    </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+
+                            <!-- AÑO -->
+                            <div class="mb-4">
+                                <label class="fw-semibold d-block mb-2">Año</label>
+                                <select name="año" class="form-select form-select-sm">
+                                    <option value="">Todos</option>
+                                    {% for año_disponible in años_disponibles %}
+                                    <option value="{{ año_disponible }}" {% if año_actual == año_disponible|stringformat:"s" %}selected{% endif %}>
+                                        {{ año_disponible }}
+                                    </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+
+                            <!-- ⭐ AUTORES (CHECKBOXES) -->
+                            <div class="mb-4">
+                                <label class="fw-semibold d-block mb-2">
+                                    <i class="fas fa-users me-1"></i>Autores
+                                    <small class="text-muted d-block fw-normal">
+                                        ({{ investigadores.count }} investigadores)
+                                    </small>
+                                </label>
+                                
+                                <div class="autores-filtro-container" style="max-height: 300px; overflow-y: auto; border: 1px solid #dee2e6; border-radius: 8px; padding: 10px;">
+                                    {% for investigador in investigadores %}
+                                    <div class="form-check mb-2">
+                                        <input class="form-check-input" 
+                                               type="checkbox" 
+                                               name="autores" 
+                                               value="{{ investigador.id }}" 
+                                               id="autor_{{ investigador.id }}"
+                                               {% if investigador.id in autores_seleccionados_ids %}checked{% endif %}>
+                                        <label class="form-check-label small" for="autor_{{ investigador.id }}">
+                                            {{ investigador.nombre_completo }}
+                                            <span class="badge bg-light text-muted ms-1">
+                                                {{ investigador.num_publicaciones }}
+                                            </span>
+                                        </label>
+                                    </div>
+                                    {% empty %}
+                                    <p class="text-muted small mb-0">No hay investigadores activos</p>
+                                    {% endfor %}
+                                </div>
+                            </div>
+
+                            <!-- ORDENAMIENTO -->
+                            <h6 class="fw-bold mb-2">Ordenar por</h6>
+                            <ul class="list-unstyled mb-3">
+                                <li>
+                                    <input type="radio" name="orden" value="año_desc" id="orden_1" 
+                                           {% if orden_actual == "año_desc" %}checked{% endif %}>
+                                    <label for="orden_1" class="ms-1">Año (más reciente)</label>
+                                </li>
+                                <li>
+                                    <input type="radio" name="orden" value="año_asc" id="orden_2" 
+                                           {% if orden_actual == "año_asc" %}checked{% endif %}>
+                                    <label for="orden_2" class="ms-1">Año (más antiguo)</label>
+                                </li>
+                                <li>
+                                    <input type="radio" name="orden" value="tipo" id="orden_3" 
+                                           {% if orden_actual == "tipo" %}checked{% endif %}>
+                                    <label for="orden_3" class="ms-1">Tipo</label>
+                                </li>
+                                <li>
+                                    <input type="radio" name="orden" value="destacadas" id="orden_4" 
+                                           {% if orden_actual == "destacadas" %}checked{% endif %}>
+                                    <label for="orden_4" class="ms-1">Destacadas</label>
+                                </li>
+                            </ul>
+                            
+                            <!-- BOTONES -->
+                            <button type="submit" class="btn btn-primary w-100 mb-2 btn-sm">
+                                <i class="fas fa-check me-2"></i>Aplicar filtros
+                            </button>
+                            
+                            <a href="?" class="btn btn-outline-secondary w-100 btn-sm">
+                                <i class="fas fa-undo me-2"></i>Limpiar filtros
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <!-- LISTADO Y BÚSQUEDA -->
+        <div class="col-lg-9">
+            
+            <!-- BÚSQUEDA -->
+            <div class="search-bar mb-4">
+                <form method="GET" action=".">
+                    <div class="input-group shadow-sm">
+                        <span class="input-group-text"><i class="fas fa-search"></i></span>
+                        <input type="text" name="q" value="{{ query }}" class="form-control"
+                               placeholder="Buscar por título, autor, revista...">
+                    </div>
+                </form>
+            </div>
+
+            <!-- MODO COMPACTO -->
+            <div class="d-flex justify-content-end mb-3">
+                <button class="btn btn-sm btn-outline-primary" id="toggleModoBtn">
+                    <i class="fas fa-compress me-2"></i>Modo Compacto
+                </button>
+            </div>
+
+            <!-- LISTADO DE PUBLICACIONES -->
+            {% for pub in publicaciones %}
+            <div class="publicacion-card shadow-md mb-4 modo-extendido">
+                <div class="row g-3 p-4">
+                    <div class="col-auto">
+                        <div class="icono-tipo-pub">
+                            <i class="fas fa-file-alt"></i>
+                        </div>
+                    </div>
+
+                    <div class="col">
+                        <div class="mb-2">
+                            <span class="badge bg-primary">{{ pub.get_tipo_display }}</span>
+                            <span class="badge bg-secondary">{{ pub.año }}</span>
+                            {% if pub.destacada %}
+                                <span class="badge bg-warning text-dark">⭐ Destacada</span>
+                            {% endif %}
+                        </div>
+
+                        <h4 class="pub-titulo">
+                            <a href="#" class="text-decoration-none text-dark">
+                                {{ pub.titulo }}
+                            </a>
+                        </h4>
+
+                        <!-- ⭐ USAMOS TU MÉTODO autores_completos -->
+                        <p class="text-primary small mb-2">
+                            <i class="fas fa-users me-1"></i>{{ pub.autores_completos|truncatechars:150 }}
+                        </p>
+
+                        {% if pub.revista %}
+                        <p class="mb-2">
+                            <strong class="text-primary">{{ pub.revista }}</strong>
+                        </p>
+                        {% endif %}
+
+                        <div class="mt-1">
+                            <small class="text-secondary">
+                                Fuente: {{ pub.fuente|capfirst }}
+                            </small>
+
+                            {% if pub.link %}
+                                &nbsp;|&nbsp;
+                                <a href="{{ pub.link }}" target="_blank" rel="noopener">
+                                    Ver publicación
+                                </a>
+                            {% endif %}
+                        </div>
+
+                        <div class="mt-2">
+                            {% if pub.doi %}
+                            <a href="{{ pub.doi }}" class="btn btn-sm btn-outline-primary me-2" target="_blank">
+                                <i class="fas fa-external-link-alt me-1"></i>DOI
+                            </a>
+                            {% endif %}
+                            {% if pub.link %}
+                            <a href="{{ pub.link }}" class="btn btn-sm btn-outline-secondary me-2" target="_blank">
+                                <i class="fas fa-link me-1"></i>Enlace
+                            </a>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <div class="text-center text-muted py-5">
+                <i class="fas fa-search fa-3x mb-3"></i>
+                <h5>No se encontraron publicaciones</h5>
+                <p>Prueba con otros términos o filtros</p>
+            </div>
+            {% endfor %}
+
+            <!-- ===== PAGINACIÓN ===== -->
+            {% if is_paginated %}
+            <nav aria-label="Paginación" class="mt-4">
+                <ul class="pagination justify-content-center">
+                    <!-- Botón ANTERIOR -->
+                    {% if publicaciones.has_previous %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ publicaciones.previous_page_number }}">
+                            <i class="fas fa-chevron-left me-2"></i>Anterior
+                        </a>
+                    </li>
+                    {% endif %}
+                    
+                    <!-- Números de página (muestra 5 páginas) -->
+                    {% for num in publicaciones.paginator.page_range %}
+                        {% if num > publicaciones.number|add:'-3' and num < publicaciones.number|add:'3' %}
+                        <li class="page-item {% if num == publicaciones.number %}active{% endif %}">
+                            <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+                        </li>
+                        {% endif %}
+                    {% endfor %}
+                    
+                    <!-- Botón SIGUIENTE -->
+                    {% if publicaciones.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ publicaciones.next_page_number }}">
+                            Siguiente<i class="fas fa-chevron-right ms-2"></i>
+                        </a>
+                    </li>
+                    {% endif %}
+                </ul>
+                <p class="text-center text-muted mt-2">
+                    Página {{ publicaciones.number }} de {{ publicaciones.paginator.num_pages }}
+                </p>
+            </nav>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<!-- ===== DEBAJO DE TUS ESTILOS CSS, ANTES DE </body> ===== -->
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<!-- ⭐ Cargar el plugin -->
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0/dist/chartjs-plugin-datalabels.min.js"></script>
+
+<script>
+// ⭐ REGISTRAR EL PLUGIN (esto es lo que faltaba)
+Chart.register(ChartDataLabels);
+
+// Datos desde Django
+const datosGraficos = {{ datos_graficos|safe }};
+
+// ===== GRÁFICO DE AÑOS =====
+const ctxAños = document.getElementById('graficoAños').getContext('2d');
+new Chart(ctxAños, {
+    type: 'bar',
+    data: {
+        labels: datosGraficos.por_año.labels,
+        datasets: [{
+            label: 'Publicaciones',
+            data: datosGraficos.por_año.data,
+            backgroundColor: 'rgba(59, 130, 246, 0.85)',
+            borderColor: 'rgba(30, 58, 138, 1)',
+            borderWidth: 2,
+            borderRadius: 8,
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+            legend: { display: false },
+            // Muestra valores encima de las barras
+            datalabels: {
+                anchor: 'end',
+                align: 'top',
+                color: '#1e3a8a',
+                font: { weight: 'bold', size: 14 },
+                formatter: function(value) {
+                    return value > 0 ? value : '';
+                }
+            },
+            tooltip: {
+                backgroundColor: 'rgba(30, 58, 138, 0.9)',
+                titleColor: 'white',
+                bodyColor: 'white',
+            }
+        },
+        scales: {
+            y: {
+                beginAtZero: true,
+                ticks: { stepSize: 1 }
+            }
+        }
+    },
+    plugins: [ChartDataLabels] // Indica que usa este plugin
+});
+
+// ===== GRÁFICO DE TIPOS (DONA) =====
+const ctxTipos = document.getElementById('graficoTipos').getContext('2d');
+new Chart(ctxTipos, {
+    type: 'doughnut',
+    data: {
+        labels: datosGraficos.por_tipo.labels,
+        datasets: [{
+            data: datosGraficos.por_tipo.data,
+            backgroundColor: [
+                'rgba(30, 58, 138, 0.8)',
+                'rgba(59, 130, 246, 0.8)',
+                'rgba(139, 92, 246, 0.8)',
+                'rgba(236, 72, 153, 0.8)',
+                'rgba(245, 158, 11, 0.8)',
+                'rgba(16, 185, 129, 0.8)'
+            ],
+            borderWidth: 3,
+            borderColor: '#ffffff'
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        cutout: '60%',
+        plugins: {
+            legend: {
+                position: 'right',
+                labels: {
+                    padding: 20,
+                    usePointStyle: true,
+                    font: { size: 13, weight: '600' }
+                }
+            },
+            // Muestra número y porcentaje en cada segmento
+            datalabels: {
+                color: 'white',
+                font: { weight: 'bold', size: 16 },
+                formatter: function(value, context) {
+                    const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                    const percentage = ((value / total) * 100).toFixed(1);
+                    return value + '\n(' + percentage + '%)';
+                }
+            },
+            tooltip: {
+                callbacks: {
+                    label: function(context) {
+                        const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                        const percentage = ((context.parsed / total) * 100).toFixed(1);
+                        return context.label + ': ' + context.parsed + ' (' + percentage + '%)';
+                    }
+                }
+            }
+        }
+    },
+    plugins: [ChartDataLabels] // Indica que usa este plugin
+});
+
+// Modo compacto (sin cambios)
+document.getElementById("toggleModoBtn").addEventListener("click", function() {
+    document.querySelectorAll(".publicacion-card").forEach(card => {
+        card.classList.toggle("modo-compacto");
+    });
+});
+</script>
+
 {% endblock %}

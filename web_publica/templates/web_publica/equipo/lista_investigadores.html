@@ -1,43 +1,208 @@
 {% extends 'web_publica/base_publica.html' %}
 {% block content %}
-<section class="py-5">
-    <div class="container">
-        <h1 class="text-center mb-5 fade-in">Nuestro Equipo</h1>
-        
-        <!-- Filtros -->
-        <div class="row mb-4">
-            <div class="col-md-12 text-center fade-in">
-                <div class="btn-group" role="group">
-                    <a href="{% url 'web_publica:equipo' %}" class="btn btn-outline-primary {% if not categoria_actual %}active{% endif %}">Todos</a>
-                    {% for codigo, nombre in categorias %}
-                    <a href="?categoria={{ codigo }}" class="btn btn-outline-primary {% if categoria_actual == codigo %}active{% endif %}">{{ nombre }}</a>
-                    {% endfor %}
-                </div>
+<style>
+
+/* ========================================================= */
+/* 🟦 TARJETAS DE INVESTIGADORES */
+/* ========================================================= */
+.team-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); /* Más chicas */
+    gap: 25px;
+}
+
+/* Tarjeta */
+.team-card {
+    background: #1e293b; /* Azul oscuro moderno */
+    border-radius: 16px;
+    padding: 18px;
+    color: #e2e8f0; /* Gris muy claro */
+    text-align: center;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.25);
+    transition: transform .25s ease, box-shadow .25s ease;
+}
+
+.team-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 12px 26px rgba(0,0,0,0.35);
+}
+
+/* Imagen del investigador */
+.team-card img {
+    width: 120px; /* Más pequeña */
+    height: 120px;
+    border-radius: 50%;
+    object-fit: cover;
+    object-position: top;
+    margin-bottom: 12px;
+    border: 3px solid #cbd5e1; /* Gris clarito */
+}
+
+/* Nombre */
+.team-card h4 {
+    color: white;
+    font-size: 1.25rem;
+    margin-bottom: .2rem;
+}
+
+/* Título académico */
+.team-card p {
+    color: #94a3b8; /* Slate 400 */
+}
+
+/* Línea de investigación */
+.team-card small {
+    color: #38bdf8 !important; /* Celeste moderno */
+    font-weight: 500;
+}
+
+/* Íconos */
+.team-card i {
+    transition: 0.2s ease;
+}
+
+.team-card a:hover i {
+    transform: scale(1.15);
+}
+
+/* Botón Ver Perfil */
+.btn-ver-perfil {
+    margin-top: 12px;
+    display: inline-block;
+    background: #3b82f6; /* Azul vibrante */
+    color: white;
+    padding: 7px 16px;
+    border-radius: 10px;
+    text-decoration: none;
+    font-weight: 500;
+    transition: background .2s;
+}
+
+.btn-ver-perfil:hover {
+    background: #1d4ed8; /* Azul más oscuro */
+}
+</style>
+
+<!-- ======================================================= -->
+<!-- 🔥 HERO / Encabezado con imagen institucional -->
+<!-- ======================================================= -->
+<section class="hero-section position-relative mb-5">
+
+    <!-- Imagen de fondo del hero -->
+    <div class="hero-img"></div>
+
+    <div class="hero-overlay"></div>
+
+    <div class="hero-content ">
+        <h1 class="hero-title fade-in">Nuestro Equipo</h1>
+        <p class="hero-subtitle fade-in">Conocé a las personas que impulsan la investigación, la ciencia y la innovación.</p>
+    </div>
+
+</section>
+
+
+<!-- ======================================================= -->
+<!-- 🔎 FILTROS -->
+<!-- ======================================================= -->
+<div class="container mb-4">
+    <div class="row justify-content-center">
+
+        <!-- Filtro por categorías -->
+        <div class="col-12 text-center mb-3">
+            <div class="btn-group">
+                <a href="{% url 'web_publica:equipo' %}"
+                   class="btn btn-outline-primary {% if not categoria_actual %}active{% endif %}">
+                   Todos
+                </a>
+
+                {% for codigo, nombre in categorias %}
+                <a href="?categoria={{ codigo }}{% if request.GET.busqueda %}&busqueda={{ request.GET.busqueda }}{% endif %}"
+                   class="btn btn-outline-primary {% if categoria_actual == codigo %}active{% endif %}">
+                    {{ nombre }}
+                </a>
+                {% endfor %}
             </div>
         </div>
 
-        <!-- Grid de Equipo -->
-        <div class="team-grid">
-            {% for miembro in miembros %}
-            <div class="team-card fade-in">
-                <img src="{{ miembro.foto.url }}" alt="{{ miembro.nombre_completo }}" class="mb-3">
-                <h4>{{ miembro.nombre_completo }}</h4>
-                <p class="text-muted">{{ miembro.titulo_Academico }}</p>
-                <small class="text-light">{{ miembro.linea_investigacion }}</small>
-                <div class="mt-3">
-                    {% if miembro.orcid_id %}
-                    <a href="{{ miembro.orcid_id }}" target="_blank" class="text-primary me-2"><i class="fab fa-orcid"></i></a>
-                    {% endif %}
-                    {% if miembro.google_scholar %}
-                    <a href="{{ miembro.google_scholar }}" target="_blank" class="text-primary me-2"><i class="fas fa-graduation-cap"></i></a>
-                    {% endif %}
-                    <a href="mailto:{{ miembro.email }}" class="text-primary"><i class="fas fa-envelope"></i></a>
-                </div>
-            </div>
-            {% empty %}
-            <p class="text-center">No hay miembros en esta categoría.</p>
-            {% endfor %}
+        <!-- Buscador por nombre -->
+        <div class="col-md-6">
+            <form method="get" class="input-group shadow-sm">
+
+                <!-- Mantener categoría seleccionada -->
+                {% if categoria_actual %}
+                    <input type="hidden" name="categoria" value="{{ categoria_actual }}">
+                {% endif %}
+
+                <input type="text" 
+                       name="busqueda" 
+                       class="form-control"
+                       placeholder="Buscar por nombre..."
+                       value="{{ request.GET.busqueda }}"
+                       style="border-radius: 12px 0 0 12px; background: #f1f5f9; color: #0f172a;">
+
+                <button class="btn btn-primary px-4" style="border-radius: 0 12px 12px 0;">
+                    <i class="fas fa-search"></i>
+                </button>
+                {% if busqueda %}
+                <a href="{% url 'web_publica:equipo' %}" class="btn btn-secondary">
+                    Limpiar
+                </a>
+                {% endif %}
+            </form>
         </div>
+
     </div>
-</section>
+</div>
+
+
+<!-- ======================================================= -->
+<!-- TARJETAS DEL EQUIPO -->
+<!-- ======================================================= -->
+<div class="container">
+    <div class="team-grid">
+
+        {% for miembro in miembros %}
+        <div class="team-card fade-in">
+
+            <img src="{{ miembro.foto.url }}" alt="{{ miembro.nombre_completo }}">
+
+            <h4>{{ miembro.nombre_completo }}</h4>
+            <p class="text-muted mb-1">{{ miembro.titulo_Academico }}</p>
+
+            {% if miembro.linea_investigacion %}
+            <small class="text-primary d-block mb-2">{{ miembro.linea_investigacion }}</small>
+            {% endif %}
+
+            <!-- Íconos -->
+            <div class="mt-2">
+                {% if miembro.orcid_id %}
+                <a href="https://orcid.org/{{ miembro.orcid_id }}" target="_blank" class="text-success me-2">
+                    <i class="fab fa-orcid fs-4"></i>
+                </a>
+                {% endif %}
+
+                {% if miembro.google_scholar %}
+                <a href="{{ miembro.google_scholar }}" target="_blank" class="text-primary me-2">
+                    <i class="fas fa-graduation-cap fs-5"></i>
+                </a>
+                {% endif %}
+
+                <a href="mailto:{{ miembro.email }}" class="text-danger">
+                    <i class="fas fa-envelope fs-5"></i>
+                </a>
+            </div>
+
+            <!-- Botón Ver Perfil -->
+            <a href="{% url 'web_publica:investigador_detalle' miembro.id %}" class="btn-ver-perfil">
+                Ver Perfil
+            </a>
+
+        </div>
+        {% empty %}
+        <p class="text-center">No hay miembros en esta categoría.</p>
+        {% endfor %}
+
+    </div>
+</div>
+
 {% endblock %}
