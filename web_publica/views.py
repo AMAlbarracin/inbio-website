@@ -4,6 +4,8 @@ from django.contrib import messages
 from .models import *
 from .forms import ContactoForm, NoticiaForm, PublicacionForm, LaboratorioForm, ServicioForm, EventoForm, InvestigadorForm, ProyectoForm, ComentarioNoticiaForm, LaboratorioImagenForm, EquipamientoFormset
 from django.contrib.auth.decorators import login_required
+from django.utils.translation import gettext as _
+from django.shortcuts import render
 from django.db.models import Count
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt

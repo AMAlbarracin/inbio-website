@@ -1,0 +1,18 @@
+{% load i18n %}
+
+<form action="{% url 'set_language' %}" method="post" class="d-inline-block">
+    {% csrf_token %}
+    <input name="next" type="hidden" value="{{ request.get_full_path }}">
+    
+    <div class="btn-group" role="group">
+        {% get_available_languages as LANGUAGES %}
+        {% get_current_language as CURRENT_LANGUAGE %}
+        
+        {% for lang_code, lang_name in LANGUAGES %}
+            <button type="submit" name="language" value="{{ lang_code }}" 
+                    class="btn btn-sm {% if lang_code == CURRENT_LANGUAGE %}btn-primary{% else %}btn-outline-primary{% endif %}">
+                {{ lang_code|upper }}
+            </button>
+        {% endfor %}
+    </div>
+</form>

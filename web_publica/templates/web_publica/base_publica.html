@@ -1,6 +1,8 @@
+{% load i18n %}
 {% load static %}
 <!DOCTYPE html>
-<html lang="es" data-bs-theme="light">
+
+<html lang="{{ request.LANGUAGE_CODE }}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -19,6 +21,29 @@
     <link rel="icon" href="{% static 'img/favicon.ico' %}">
     
     {% block extra_css %}{% endblock %}
+
+    <style>
+        /* Estilo para que el traductor de Google no rompa el diseño */
+        #google_translate_element {
+            margin-left: 15px;
+            display: inline-block;
+            vertical-align: middle;
+        }
+        .goog-te-gadget-simple {
+            background-color: transparent !important;
+            border: 1px solid #666 !important;
+            padding: 3px !important;
+            border-radius: 4px !important;
+            font-size: 12px !important;
+        }
+        .goog-te-gadget-icon { display: none !important; }
+        .goog-te-menu-value span { color: #fff !important; }
+        /* Ocultar barra superior de Google */
+        .goog-te-banner-frame.skiptranslate { display: none !important; }
+        body { top: 0px !important; }
+    </style>
+
+
 </head>
 <body>
     <!-- Navbar Fijo -->
@@ -42,28 +67,28 @@
                     <!-- INICIO -->
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'web_publica:home' %}">
-                            <i class="fas fa-home me-1"></i>Inicio
+                            <i class="fas fa-home me-1"></i>{% trans "Inicio" %}
                         </a>
                     </li>
                     
                     <!-- INSTITUTO (Dropdown) -->
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">
-                            <i class="fas fa-building me-1"></i>Instituto
+                            <i class="fas fa-building me-1"></i>{% trans "Instituto" %}
                         </a>
                         <ul class="dropdown-menu dropdown-menu-dark">
                             <li><a class="dropdown-item" href="{% url 'web_publica:historia' %}">
-                                <i class="fas fa-history me-2"></i>Historia
+                                <i class="fas fa-history me-2"></i>{% trans "Historia" %}
                             </a></li>
                             <li><a class="dropdown-item" href="{% url 'web_publica:mision_vision' %}">
-                                <i class="fas fa-bullseye me-2"></i>Misión y Visión
+                                <i class="fas fa-bullseye me-2"></i>{% trans "Misión y Visión" %}
                             </a></li>
                             <li><a class="dropdown-item" href="{% url 'web_publica:equipo' %}">
-                                <i class="fas fa-users me-2"></i>Nuestro Equipo
+                                <i class="fas fa-users me-2"></i>{% trans "Nuestro Equipo" %}
                             </a></li>
                             <li><hr class="dropdown-divider"></li>
                             <li><a class="dropdown-item" href="{% url 'web_publica:noticias' %}">
-                                <i class="fas fa-newspaper me-2"></i>Noticias
+                                <i class="fas fa-newspaper me-2"></i>{% trans "Noticias" %}
                             </a></li>
                         </ul>
                     </li>
@@ -71,17 +96,17 @@
                     <!-- INVESTIGACIÓN (Dropdown) -->
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">
-                            <i class="fas fa-microscope me-1"></i>Investigación
+                            <i class="fas fa-microscope me-1"></i>{% trans "Investigación" %}
                         </a>
                         <ul class="dropdown-menu dropdown-menu-dark">
                             <li><a class="dropdown-item" href="{% url 'web_publica:publicaciones' %}">
-                                <i class="fas fa-file-alt me-2"></i>Publicaciones
+                                <i class="fas fa-file-alt me-2"></i>{% trans "Publicaciones" %}
                             </a></li>
                             <li><a class="dropdown-item" href="{% url 'web_publica:proyectos_investigacion' %}">
-                                <i class="fas fa-flask me-2"></i>Proyectos
+                                <i class="fas fa-flask me-2"></i>{% trans "Proyectos" %}
                             </a></li>
                             <li><a class="dropdown-item" href="{% url 'web_publica:laboratorios' %}">
-                                <i class="fas fa-flask-gear m-2"></i>Laboratorios
+                                <i class="fas fa-flask-gear m-2"></i>{% trans "Laboratorios" %}
                             </a></li>
                         </ul>
                     </li>
@@ -89,19 +114,19 @@
                     <!-- EMPRESAS (Dropdown) -->
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">
-                            <i class="fas fa-handshake me-1"></i>Transferencias
+                            <i class="fas fa-handshake me-1"></i>{% trans "Transferencias" %}
                         </a>
                         <ul class="dropdown-menu dropdown-menu-dark">
                             <li><a class="dropdown-item" href="{% url 'web_publica:servicios' %}">
-                                <i class="fas fa-cogs me-2"></i>Servicios
+                                <i class="fas fa-cogs me-2"></i>{% trans "Servicios" %}
                             </a></li>
                             <li><a class="dropdown-item" href="{% url 'web_publica:proyectos_colaborativos' %}">
-                                <i class="fas fa-clipboard-list me-2"></i>Proyectos Colaborativos
+                                <i class="fas fa-clipboard-list me-2"></i>{% trans "Proyectos Colaborativos" %}
                             </a></li>
                             {% if not request.user.is_authenticated %}
                             <li><hr class="dropdown-divider"></li>
                             <li><a class="dropdown-item text-primary" href="{% url 'web_publica:contacto' %}">
-                                <i class="fas fa-envelope me-2"></i>Contacto Comercial
+                                <i class="fas fa-envelope me-2"></i>{% trans "Contacto Comercial" %}
                             </a></li>
                             {% endif %}
                         </ul>
@@ -110,7 +135,7 @@
                     <!-- CONTACTO -->
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'web_publica:contacto' %}">
-                            <i class="fas fa-envelope me-1"></i>Contacto
+                            <i class="fas fa-envelope me-1"></i>{% trans "Contacto" %}
                         </a>
                     </li>
                     
@@ -119,29 +144,29 @@
                     <!-- USUARIO AUTENTICADO -->
                     <li class="nav-item dropdown ms-3">
                         <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">
-                            <i class="fas fa-user-circle me-1"></i>Panel
+                            <i class="fas fa-user-circle me-1"></i>{% trans "Panel" %}
                         </a>
                         <ul class="dropdown-menu dropdown-menu-dark">
                             <li><a class="dropdown-item" href="{% url 'web_publica:dashboard' %}">
-                                <i class="fas fa-tachometer-alt me-2"></i>Mi Dashboard
+                                <i class="fas fa-tachometer-alt me-2"></i>{% trans "Mi Dashboard" %}
                             </a></li>
                             <li><a class="dropdown-item" href="{% url 'web_publica:reserva_calendario' %}">
-                                <i class="fas fa-calendar-plus me-2"></i>Reservar Lab
+                                <i class="fas fa-calendar-plus me-2"></i>{% trans "Reservar Lab" %}
                             </a></li>
                             <li><hr class="dropdown-divider"></li>
                             <li><a class="dropdown-item text-warning" href="{% url 'web_publica:estadisticas' %}">
-                                <i class="fas fa-chart-bar me-2"></i>Estadísticas
+                                <i class="fas fa-chart-bar me-2"></i>{% trans "Estadísticas" %}
                             </a></li>
 
                             <!-- Nuevo panel-->
                             
                             
                             <li><a class="dropdown-item" href="{% url 'web_publica:cargas_web' %}">
-                                <i class="fas fa-tachometer-alt me-2 text-success"></i>Panel de Cargas
+                                <i class="fas fa-tachometer-alt me-2 text-success"></i>{% trans "Panel de Cargas" %}
                             </a></li>
                             <li><hr class="dropdown-divider"></li>
                             <li><a class="dropdown-item text-warning" href="/admin/">
-                                <i class="fas fa-tools me-2"></i>Admin Avanzado
+                                <i class="fas fa-tools me-2"></i>{% trans "Admin Avanzado" %}
                             </a></li>                        
                             <!--Fin nuevo panel -->
 
@@ -150,7 +175,7 @@
                                 <form id="logout-form" method="post" action="{% url 'web_publica:logout' %}" style="display: inline;">
                                     {% csrf_token %}
                                     <button type="submit" class="btn-bio btn-bio-sm">
-                                        <i class="fas fa-sign-out-alt me-1"></i> Cerrar sesión
+                                        <i class="fas fa-sign-out-alt me-1"></i> {% trans "Cerrar sesión" %}
                                     </button>
                                 </form>
                             </li>
@@ -160,10 +185,16 @@
                     <!-- USUARIO NO AUTENTICADO -->
                     <li class="nav-item ms-3">
                         <a class="nav-link btn btn-outline-primary px-3" href="{% url 'web_publica:login' %}">
-                            <i class="fas fa-sign-in-alt me-1"></i>Login
+                            <i class="fas fa-sign-in-alt me-1"></i>{% trans "Login" %}
                         </a>
                     </li>
                     {% endif %}
+
+                    <!-- SELECTOR DE IDIOMA (NUEVO) -->
+                    
+                    <li class="nav-item d-flex align-items-center">
+                        <div id="google_translate_element"></div>
+                    </li>
                     
                     <!-- TOGGLE DARK/LIGHT MODE -->
                     <li class="nav-item ms-3">
@@ -175,6 +206,8 @@
             </div>
         </div>
     </nav>
+
+    
 
     <!-- Mensajes Agregados-->
      <div class="container mt-3">
@@ -207,12 +240,12 @@
         <div class="container">
             <div class="row">
                 <div class="col-lg-3">
-                    <h5 class="text-primary">Instituto de Bioingeniería</h5>
-                    <p>Facultad de Ingeniería<br>UNSJ - Universidad Nacional de San Juan </p>
+                    <h5 class="text-primary">{% trans "Instituto de Bioingeniería" %}</h5>
+                    <p>{% trans "Facultad de Ingeniería<br>UNSJ - Universidad Nacional de San Juan" %} </p>
                 </div>
                 <!-- 🔵 ÍCONOS REDES SOCIALES -->
                 <div class="col-lg-2">
-                    <h6>Enlaces</h6>
+                    <h6>{% trans "Enlaces" %}</h6>
                     <ul class="list-unstyled">
                         <li><a href="https://facebook.com" target="_blank" class="text-light me-3 fs-4"><i class="fab fa-facebook"></i></a></li>
                         <li><a href="https://instagram.com" target="_blank" class="text-light me-3 fs-4"><i class="fab fa-instagram"></i></a></li>
@@ -221,12 +254,12 @@
                     </ul>                 
                 </div>
                 <div class="col-lg-3">
-                    <h6>Contacto</h6>
-                    <p><i class="fas fa-map-marker-alt me-2"></i>Av. Libertador Gral. San Martín Oste 1109, Primer Piso del Departamento de Electrónica y Automática<br> San Juan - Argentina, CP 5400, J5400ARL</p>
-                    <p><i class="fas fa-phone me-2"></i>+54 264 421-1700 Interno 313</p>
+                    <h6>{% trans "Contacto" %}</h6>
+                    <p><i class="fas fa-map-marker-alt me-2"></i>{% trans "Av. Libertador Gral. San Martín Oste 1109, Primer Piso del Departamento de Electrónica y Automática<br> San Juan - Argentina, CP 5400, J5400ARL" %}</p>
+                    <p><i class="fas fa-phone me-2"></i>+54 264 421-1700 {% trans "Interno" %} 313</p>
                 </div>
                 <div class="col-lg-4">
-                    <h6>Ubicación</h6>                    
+                    <h6>{% trans "Ubicación" %}</h6>                    
                     <div style="width: 100%; height: 150px; overflow: hidden; border-radius: 6px;">
                         <iframe 
                             src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3400.652575563549!2d-68.54448769999999!3d-31.533700800000005!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x9681403474a2d269%3A0xed2e8f0149c8f2c4!2sFacultad%20de%20Ingenier%C3%ADa%20UNSJ!5e0!3m2!1ses-419!2sar!4v1763136772835!5m2!1ses-419!2sar" 
@@ -242,7 +275,7 @@
             </div>
             <hr>
             <div class="text-center">
-                <p>&copy; 2025 Instituto de Bioingeniería. Todos los derechos reservados.</p>
+                <p>&copy; {% trans "2025 Instituto de Bioingeniería. Todos los derechos reservados." %}</p>
             </div>
         </div>
     </footer>
@@ -251,6 +284,18 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="{% static 'js/theme-toggle.js' %}"></script>
     <script src="{% static 'js/scroll-animations.js' %}"></script>
+
+    <script type="text/javascript">
+        function googleTranslateElementInit() {
+            new google.translate.TranslateElement({
+                pageLanguage: 'es', 
+                includedLanguages: 'en,es', 
+                layout: google.translate.TranslateElement.InlineLayout.SIMPLE,
+                autoDisplay: false
+            }, 'google_translate_element');
+        }
+    </script>
+    <script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
     
     {% block extra_js %}{% endblock %}
 </body>

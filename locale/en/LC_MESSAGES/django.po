@@ -1,0 +1,138 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: INBIO Website\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-03-06 20:27-0300\n"
+"PO-Revision-Date: 2026-03-06 20:30-0300\n"
+"Last-Translator: Gemini AI\n"
+"Language-Team: English\n"
+"Language: en\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: .\web_publica\templates\web_publica\base_publica.html:47
+msgid "Inicio"
+msgstr "Home"
+
+#: .\web_publica\templates\web_publica\base_publica.html:54
+msgid "Instituto"
+msgstr "Institute"
+
+#: .\web_publica\templates\web_publica\base_publica.html:58
+msgid "Historia"
+msgstr "History"
+
+#: .\web_publica\templates\web_publica\base_publica.html:61
+msgid "Misión y Visión"
+msgstr "Mission and Vision"
+
+#: .\web_publica\templates\web_publica\base_publica.html:64
+msgid "Nuestro Equipo"
+msgstr "Our Team"
+
+#: .\web_publica\templates\web_publica\base_publica.html:68
+msgid "Noticias"
+msgstr "News"
+
+#: .\web_publica\templates\web_publica\base_publica.html:76
+msgid "Investigación"
+msgstr "Research"
+
+#: .\web_publica\templates\web_publica\base_publica.html:80
+msgid "Publicaciones"
+msgstr "Publications"
+
+#: .\web_publica\templates\web_publica\base_publica.html:83
+msgid "Proyectos"
+msgstr "Projects"
+
+#: .\web_publica\templates\web_publica\base_publica.html:86
+msgid "Laboratorios"
+msgstr "Laboratories"
+
+#: .\web_publica\templates\web_publica\base_publica.html:94
+msgid "Transferencias"
+msgstr "Transfers"
+
+#: .\web_publica\templates\web_publica\base_publica.html:98
+msgid "Servicios"
+msgstr "Services"
+
+#: .\web_publica\templates\web_publica\base_publica.html:101
+msgid "Proyectos Colaborativos"
+msgstr "Collaborative Projects"
+
+#: .\web_publica\templates\web_publica\base_publica.html:106
+msgid "Contacto Comercial"
+msgstr "Business Contact"
+
+#: .\web_publica\templates\web_publica\base_publica.html:115
+#: .\web_publica\templates\web_publica\base_publica.html:233
+msgid "Contacto"
+msgstr "Contact"
+
+#: .\web_publica\templates\web_publica\base_publica.html:124
+msgid "Panel"
+msgstr "Panel"
+
+#: .\web_publica\templates\web_publica\base_publica.html:128
+msgid "Mi Dashboard"
+msgstr "My Dashboard"
+
+#: .\web_publica\templates\web_publica\base_publica.html:131
+msgid "Reservar Lab"
+msgstr "Book Lab"
+
+#: .\web_publica\templates\web_publica\base_publica.html:135
+msgid "Estadísticas"
+msgstr "Statistics"
+
+#: .\web_publica\templates\web_publica\base_publica.html:142
+msgid "Panel de Cargas"
+msgstr "Upload Panel"
+
+#: .\web_publica\templates\web_publica\base_publica.html:146
+msgid "Admin Avanzado"
+msgstr "Advanced Admin"
+
+#: .\web_publica\templates\web_publica\base_publica.html:155
+msgid "Cerrar sesión"
+msgstr "Logout"
+
+#: .\web_publica\templates\web_publica\base_publica.html:165
+msgid "Login"
+msgstr "Login"
+
+#: .\web_publica\templates\web_publica\base_publica.html:219
+msgid "Instituto de Bioingeniería"
+msgstr "Institute of Bioengineering"
+
+#: .\web_publica\templates\web_publica\base_publica.html:220
+msgid "Facultad de Ingeniería<br>UNSJ - Universidad Nacional de San Juan"
+msgstr "Faculty of Engineering<br>UNSJ - National University of San Juan"
+
+#: .\web_publica\templates\web_publica\base_publica.html:224
+msgid "Enlaces"
+msgstr "Links"
+
+#: .\web_publica\templates\web_publica\base_publica.html:234
+msgid ""
+"Av. Libertador Gral. San Martín Oste 1109, Primer Piso del Departamento de "
+"Electrónica y Automática<br> San Juan - Argentina, CP 5400, J5400ARL"
+msgstr ""
+"1109 Av. Libertador Gral. San Martín Oste, First Floor, Department of "
+"Electronics and Automatics<br> San Juan - Argentina, CP 5400, J5400ARL"
+
+#: .\web_publica\templates\web_publica\base_publica.html:235
+msgid "Interno"
+msgstr "Extension"
+
+#: .\web_publica\templates\web_publica\base_publica.html:238
+msgid "Ubicación"
+msgstr "Location"
+
+#: .\web_publica\templates\web_publica\base_publica.html:254
+msgid "2025 Instituto de Bioingeniería. Todos los derechos reservados."
+msgstr "2025 Institute of Bioengineering. All rights reserved."

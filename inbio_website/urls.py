@@ -1,6 +1,5 @@
 """
 URL configuration for inbio_website project.
-
 The `urlpatterns` list routes URLs to views. For more information please see:
     https://docs.djangoproject.com/en/5.1/topics/http/urls/
 Examples:
@@ -16,16 +15,26 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
+from django.conf.urls.i18n import i18n_patterns
 from django.conf import settings
 from django.conf.urls.static import static
     
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', include('web_publica.urls')),
+    path('i18n/', include('django.conf.urls.i18n')),  # Para el cambio de idioma
+    #path('', include('web_publica.urls')),
     #path('', include('core.urls')),
     #path('accounts/', include('django.contrib.auth.urls')),  # For authentication
     
 ] 
+
+# URLs que SÍ cambian con el idioma (tu web pública)
+urlpatterns += i18n_patterns(
+    path('', include('web_publica.urls')),
+    # Si tienes otras apps, agrégalas aquí
+    prefix_default_language=False,  # No pone /es/ en la URL por defecto
+)
+
 #sirve archivos media en desarrollo
 if settings.DEBUG:    
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
