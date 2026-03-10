@@ -24,8 +24,11 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # SECURITY WARNING: keep the secret key used in production secret!
 # REEMPLAZA estas líneas:
 SECRET_KEY = config('SECRET_KEY')
-DEBUG = config('DEBUG', default=False, cast=bool)
-ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='localhost,127.0.0.1', cast=lambda v: [s.strip() for s in v.split(',')])
+#DEBUG = config('DEBUG', default=False, cast=bool)
+#ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='localhost,127.0.0.1', cast=lambda v: [s.strip() for s in v.split(',')])
+
+DEBUG = False
+ALLOWED_HOSTS = ['190.124.224.202','inbio.fi.unsj.edu.ar','localhost']
 
 
 # Application definition
@@ -73,7 +76,10 @@ REST_FRAMEWORK = {
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:8000",
     "http://127.0.0.1:8000",
+    "http://190.124.224.202:8000",
 ]
+
+
 
 ROOT_URLCONF = 'inbio_website.urls'
 
