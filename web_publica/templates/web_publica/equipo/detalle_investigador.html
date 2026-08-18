@@ -257,7 +257,7 @@
             </div>
 
             <!-- TARJETA INSTITUCIONAL -->
-            {% if laboratorios_a_cargo or laboratorios_integrante or proyectos.all %}
+            {% if laboratorios_a_cargo or laboratorios_integrantes or proyectos.all %}
             <div class="card-institucional">
             
                 <div class="card-header institucional-header text-center">
@@ -283,11 +283,11 @@
                     {% endif %}
 
                     <!-- Laboratorios donde participa -->
-                    {% if laboratorios_integrante %}
+                    {% if laboratorios_integrantes %}
                     <div class="mb-3">
                         <p class="fw-bold mb-1">Laboratorios donde participa:</p>
                         <ul>
-                            {% for lab in laboratorios_integrante %}
+                            {% for lab in laboratorios_integrantes %}
                                 <li>
                                     <strong>{{ lab.nombre }}</strong><br>
                                     {{ lab.descripcion|truncatewords:20 }}<br>

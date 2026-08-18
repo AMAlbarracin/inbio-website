@@ -13,7 +13,12 @@ class InvestigadorViewSet(viewsets.ReadOnlyModelViewSet):
     permission_classes = [permissions.AllowAny]
 
 class ReservaViewSet(viewsets.ModelViewSet):
-    queryset = Reserva.objects.all()
     serializer_class = ReservaSerializer
     permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        user = self.request.user
+        if user.is_staff:
+            return Reserva.objects.all()
+        return Reserva.objects.filter(investigador__email=user.email)
     

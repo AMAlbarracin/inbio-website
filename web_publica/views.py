@@ -458,13 +458,6 @@ def laboratorio_detalle_view(request, pk):
     return render(request, "web_publica/laboratorios/detalle.html", context)
 
 
-@login_required
-def reserva_calendario_view(request):
-    """Calendario interactivo de reservas"""
-    # Nota: Requiere sistema de autenticación
-    reservas = Reserva.objects.filter(estado='APROBADA')
-    return render(request, 'web_publica/laboratorios/calendario.html', {'reservas': reservas})
-
 def servicios_lista_view(request):
     """Catálogo de servicios para empresas"""
     servicios = Servicio.objects.all()
@@ -492,12 +485,12 @@ def dashboard_view(request):
     return render(request, 'web_publica/auth/dashboard.html', context)
 
 
-
+@login_required
 def reserva_calendario_view(request):
     """Página con calendario interactivo"""
-    if request.user.is_authenticated:
-        return render(request, 'web_publica/laboratorios/calendario.html')
-    return redirect('web_publica:login')
+    reservas = Reserva.objects.filter(estado='APROBADA')
+    return render(request, 'web_publica/laboratorios/calendario.html', {'reservas': reservas})
+
 
 @csrf_exempt  # Temporal, luego usaremos tokens
 def reserva_api_view(request):
@@ -911,6 +904,8 @@ def eliminar_imagen_noticia(request, imagen_id):
     imagen.delete()
     return JsonResponse({'success': True})
 
+@login_required
+@user_passes_test(es_administrador_o_coordinador)
 @require_POST
 def eliminar_video_noticia(request, video_id):
     video = get_object_or_404(NoticiaVideo, id=video_id)
