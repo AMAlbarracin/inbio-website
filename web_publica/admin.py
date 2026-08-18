@@ -115,3 +115,14 @@ class EquipamientoAdmin(admin.ModelAdmin):
             return format_html('<img src="{}" width="60"/>', obj.imagen.url)
         return format_html('<i class="fas fa-box fa-2x text-gray-400"></i>')
     imagen_thumbnail.short_description = 'Imagen'
+
+@admin.register(ComentarioNoticia)
+class ComentarioNoticiaAdmin(admin.ModelAdmin):
+    list_display = ('nombre', 'noticia', 'contenido_corto', 'aprobado', 'spam', 'fecha_creacion')
+    list_filter = ('aprobado', 'spam', 'fecha_creacion')
+    search_fields = ('nombre', 'email', 'contenido')
+    list_editable = ('aprobado', 'spam')
+
+    def contenido_corto(self, obj):
+        return obj.contenido[:60] + '...' if len(obj.contenido) > 60 else obj.contenido
+    contenido_corto.short_description = 'Comentario'

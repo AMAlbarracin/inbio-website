@@ -414,7 +414,7 @@ def noticia_detalle_view(request, pk):
             comentario = form.save(commit=False)
             comentario.noticia = noticia
             
-            comentario.aprobado = True  # Para pruebas, en producción debería ser False
+            comentario.aprobado = False
             
             comentario.save()
             messages.success(request, 'Comentario enviado. Se publicará tras moderación.')
