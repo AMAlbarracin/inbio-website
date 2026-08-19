@@ -27,6 +27,12 @@ SECRET_KEY = config('SECRET_KEY')
 DEBUG = config('DEBUG', default=False, cast=bool)
 ALLOWED_HOSTS = ['190.124.224.202','inbio.fi.unsj.edu.ar','localhost', '127.0.0.1']
 
+# Le dice a Django que confíe en este dominio para los formularios (login, admin, etc.)
+CSRF_TRUSTED_ORIGINS = ['https://inbio.fi.unsj.edu.ar']
+
+# Le dice a Django que reconozca que una visita llegó por HTTPS,
+# aunque Gunicorn la reciba de Nginx como una conexión interna normal.
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
 # Application definition
 
