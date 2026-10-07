@@ -1,0 +1,281 @@
+{% extends 'web_publica/base_publica.html' %}
+{% load static %}
+
+{% block title %}{{ programa.titulo }} - Programas de Investigación - INBIO{% endblock %}
+
+{% block content %}
+<style>
+:root {
+    --pg-bg: #0a1930;
+    --pg-bg-alt: #0d213d;
+    --pg-card: #0f2547;
+    --pg-border: #1e3a6b;
+    --pg-accent: #4fc3f7;
+    --pg-accent-strong: #64ffda;
+    --pg-text: #e8f1fb;
+    --pg-text-muted: #a9c0da;
+}
+
+.programa-hero {
+    padding: 7rem 0 3rem;
+    background: linear-gradient(160deg, var(--pg-bg) 0%, var(--pg-bg-alt) 100%);
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+}
+.programa-hero::before {
+    content: '';
+    position: absolute;
+    top: -100px; left: 50%;
+    transform: translateX(-50%);
+    width: 500px; height: 500px;
+    background: radial-gradient(circle, rgba(79,195,247,0.15) 0%, transparent 70%);
+    pointer-events: none;
+}
+.programa-volver {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--pg-text-muted);
+    text-decoration: none;
+    font-size: 0.9rem;
+    margin-bottom: 2rem;
+    transition: color .2s ease;
+}
+.programa-volver:hover { color: var(--pg-accent); }
+
+.programa-hero-icono-wrap {
+    width: 110px; height: 110px;
+    margin: 0 auto 1.5rem;
+    border-radius: 50%;
+    background: rgba(79,195,247,0.1);
+    border: 2px solid var(--pg-border);
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 0 30px rgba(79,195,247,0.25);
+    position: relative;
+    z-index: 1;
+}
+.programa-hero-icono { font-size: 2.8rem; color: var(--pg-accent); }
+
+.programa-hero-titulo {
+    color: #ffffff;
+    font-weight: 800;
+    font-size: 2.3rem;
+    margin-bottom: 0.5rem;
+    position: relative;
+    z-index: 1;
+}
+.programa-hero-resolucion {
+    color: var(--pg-accent);
+    font-size: 0.95rem;
+    font-weight: 600;
+    letter-spacing: .5px;
+}
+
+.programa-hero-banner {
+    width: 100%;
+    max-width: 900px;
+    max-height: 420px;
+    object-fit: cover;
+    border-radius: 18px;
+    margin-top: 2.5rem;
+    border: 1px solid var(--pg-border);
+    box-shadow: 0 20px 50px rgba(0,0,0,0.4);
+}
+
+.programa-detalle-body {
+    padding: 4rem 0 5rem;
+    background: var(--pg-bg-alt);
+}
+.programa-descripcion {
+    font-size: 1.1rem;
+    line-height: 1.9;
+    color: var(--pg-text);
+    max-width: 780px;
+    margin: 0 auto 3.5rem;
+    text-align: center;
+}
+
+.puntos-clave-titulo {
+    color: #ffffff;
+    text-align: center;
+    font-weight: 700;
+    font-size: 1.5rem;
+    margin-bottom: 2.5rem;
+}
+.puntos-clave-grid {
+    max-width: 900px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+}
+.punto-clave-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    padding: 1.25rem 1.5rem;
+    background: var(--pg-card);
+    border: 1px solid var(--pg-border);
+    border-radius: 12px;
+    color: var(--pg-text);
+    transition: all .25s ease;
+}
+.punto-clave-item:hover {
+    border-color: var(--pg-accent);
+    transform: translateY(-4px);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+}
+.punto-clave-item i {
+    color: var(--pg-accent-strong);
+    font-size: 1.2rem;
+    margin-top: 0.15rem;
+    flex-shrink: 0;
+}
+.punto-clave-item span { font-size: 0.95rem; line-height: 1.5; }
+
+.otros-programas-section {
+    padding: 4rem 0 5rem;
+    background: var(--pg-bg);
+}
+.otros-programas-titulo {
+    color: #ffffff;
+    text-align: center;
+    font-weight: 700;
+    font-size: 1.5rem;
+    margin-bottom: 2.5rem;
+}
+.otro-programa-card {
+    display: block;
+    background: var(--pg-card);
+    border: 1px solid var(--pg-border);
+    border-radius: 14px;
+    padding: 2rem 1.5rem;
+    text-align: center;
+    text-decoration: none;
+    height: 100%;
+    transition: all .25s ease;
+}
+.otro-programa-card:hover {
+    transform: translateY(-6px);
+    border-color: var(--pg-accent);
+    box-shadow: 0 15px 35px rgba(0,0,0,0.35);
+}
+.otro-programa-icono {
+    font-size: 2rem;
+    color: var(--pg-accent);
+    margin-bottom: 1rem;
+    display: block;
+}
+.otro-programa-titulo {
+    color: #ffffff;
+    font-size: 1.05rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+}
+.otro-programa-resumen {
+    color: var(--pg-text-muted);
+    font-size: 0.85rem;
+    margin: 0;
+}
+
+@media (max-width: 768px) {
+    .puntos-clave-grid { grid-template-columns: 1fr; }
+    .programa-hero-titulo { font-size: 1.7rem; }
+}
+</style>
+
+<!-- HERO DEL PROGRAMA -->
+<section class="programa-hero">
+    <div class="container">
+        <a href="{% url 'web_publica:home' %}" class="programa-volver">
+            <i class="fas fa-arrow-left"></i> Volver a Inicio
+        </a>
+        <a href="{% url 'web_publica:programas' %}" class="programa-volver">
+            <i class="fas fa-arrow-left"></i> Ir a Programas de Investigación
+        </a>
+
+        <div class="programa-hero-icono-wrap">
+            <i class="fas {{ programa.icono }} programa-hero-icono"></i>
+        </div>
+
+        <h1 class="programa-hero-titulo">{{ programa.titulo }}</h1>
+        {% if programa.resolucion %}
+            <p class="programa-hero-resolucion">{{ programa.resolucion }}</p>
+        {% endif %}
+
+        {% if programa.imagen_banner %}
+            <img src="{{ programa.imagen_banner.url }}" class="programa-hero-banner" alt="{{ programa.titulo }}">
+        {% endif %}
+    </div>
+</section>
+
+<!-- CONTENIDO -->
+<section class="programa-detalle-body">
+    <div class="container">
+        <p class="programa-descripcion">{{ programa.descripcion_completa }}</p>
+
+        {% with puntos=programa.get_puntos_clave_list %}
+        {% if puntos %}
+        <h4 class="puntos-clave-titulo">Este programa comprende</h4>
+        <div class="puntos-clave-grid">
+            {% for punto in puntos %}
+            <div class="punto-clave-item">
+                <i class="fas fa-circle-check"></i>
+                <span>{{ punto }}</span>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+        {% endwith %}
+    </div>
+</section>
+
+<!-- PROYECTOS ASOCIADOS -->
+<section class="programa-detalle-body" style="padding-top:0; background:var(--pg-bg);">
+    <div class="container">
+        <h4 class="puntos-clave-titulo">Proyectos de este Programa</h4>
+        {% if proyectos_asociados %}
+        <div class="row g-4">
+            {% for proyecto in proyectos_asociados %}
+            <div class="col-md-6">
+                <a href="{% url 'web_publica:proyecto_detalle' proyecto.pk %}" class="punto-clave-item" style="align-items:center; text-decoration:none;">
+                    <i class="fas fa-flask" style="font-size:1.4rem;"></i>
+                    <div>
+                        <strong style="color:#fff; display:block; margin-bottom:.25rem;">{{ proyecto.titulo }}</strong>
+                        <span style="font-size:.85rem;">
+                            {{ proyecto.get_estado_display }} · Responsable: {{ proyecto.responsable.nombre_completo }}
+                        </span>
+                    </div>
+                </a>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <p style="text-align:center; color:var(--pg-text-muted);">
+            Aún no hay proyectos cargados para este programa.
+        </p>
+        {% endif %}
+    </div>
+</section>
+
+<!-- OTROS PROGRAMAS -->
+{% if otros_programas %}
+<section class="otros-programas-section">
+    <div class="container">
+        <h4 class="otros-programas-titulo">Otros Programas de Investigación</h4>
+        <div class="row g-4">
+            {% for p in otros_programas %}
+            <div class="col-md-4">
+                <a href="{% url 'web_publica:programa_detalle' p.slug %}" class="otro-programa-card">
+                    <i class="fas {{ p.icono }} otro-programa-icono"></i>
+                    <h5 class="otro-programa-titulo">{{ p.titulo }}</h5>
+                    <p class="otro-programa-resumen">{{ p.resumen_corto }}</p>
+                </a>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endif %}
+{% endblock %}

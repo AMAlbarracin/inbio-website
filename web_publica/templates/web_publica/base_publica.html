@@ -99,14 +99,17 @@
                             <i class="fas fa-microscope me-1"></i>{% trans "Investigación" %}
                         </a>
                         <ul class="dropdown-menu dropdown-menu-dark">
-                            <li><a class="dropdown-item" href="{% url 'web_publica:publicaciones' %}">
-                                <i class="fas fa-file-alt me-2"></i>{% trans "Publicaciones" %}
+                            <li><a class="dropdown-item" href="{% url 'web_publica:programas' %}">
+                                <i class="fas fa-diagram-project me-2"></i>{% trans "Programas" %}
                             </a></li>
                             <li><a class="dropdown-item" href="{% url 'web_publica:proyectos_investigacion' %}">
                                 <i class="fas fa-flask me-2"></i>{% trans "Proyectos" %}
                             </a></li>
+                            <li><a class="dropdown-item" href="{% url 'web_publica:publicaciones' %}">
+                                <i class="fas fa-file-alt me-2"></i>{% trans "Publicaciones" %}
+                            </a></li>
                             <li><a class="dropdown-item" href="{% url 'web_publica:laboratorios' %}">
-                                <i class="fas fa-flask-gear m-2"></i>{% trans "Laboratorios" %}
+                                <i class="fas fa-flask-vial me-2"></i>{% trans "Laboratorios" %}
                             </a></li>
                         </ul>
                     </li>

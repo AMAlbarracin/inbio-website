@@ -1,0 +1,88 @@
+{% load static %}
+<style>
+.programas-section {
+    padding: 5rem 0;
+    background: linear-gradient(to bottom, #0a1429, var(--primary-color));
+}
+.programas-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 2rem;
+    margin-top: 3rem;
+    max-width: 1000px;
+    margin-left: auto;
+    margin-right: auto;
+}
+@media (max-width: 768px) {
+    .programas-grid { grid-template-columns: 1fr; }
+}
+.programa-card {
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 16px;
+    padding: 2.5rem 2rem;
+    text-align: center;
+    transition: var(--transition);
+    height: 100%;
+    display: block;
+    text-decoration: none;
+}
+.programa-card:hover {
+    transform: translateY(-8px);
+    box-shadow: var(--shadow-lg);
+    border-color: var(--secondary-color);
+}
+.programa-icono {
+    font-size: 3rem;
+    margin-bottom: 1.5rem;
+    color: var(--secondary-color);
+}
+.programa-titulo {
+    color: white;
+    font-size: 1.25rem;
+    margin-bottom: 1rem;
+}
+.programa-resumen {
+    color: var(--text-light);
+    font-size: 0.9rem;
+    opacity: 0.85;
+    margin: 0;
+}
+.programa-resolucion {
+    display: block;
+    font-size: 0.9rem;
+    color: var(--secondary-color);
+    font-weight: 400;
+}
+</style>
+
+<section class="programas-section">
+    <div class="container">
+        <h2 class="seccion-titulo text-center fade-in">
+            Programas de Investigación
+            {% if programas_investigacion.0.resolucion %}
+                <span class="programa-resolucion">{{ programas_investigacion.0.resolucion }}</span>
+            {% endif %}
+        </h2>
+
+        <div class="programas-grid">
+            {% for programa in programas_investigacion %}
+            <a href="{% url 'web_publica:programa_detalle' programa.slug %}" class="programa-card fade-in">
+                <i class="fas {{ programa.icono }} programa-icono"></i>
+                <h4 class="programa-titulo">{{ programa.titulo }}</h4>
+                <p class="programa-resumen">{{ programa.resumen_corto }}</p>
+            </a>
+            {% empty %}
+            <div class="col-12 text-center py-4">
+                <i class="fas fa-microscope fa-3x text-muted mb-3"></i>
+                <p class="text-muted">Aún no hay programas de investigación cargados</p>
+                {% if request.user.is_authenticated %}
+                <a href="{% url 'web_publica:cargar_programa' %}" class="btn-bio btn-bio-sm">
+                    <i class="fas fa-plus me-1"></i> Cargar primer programa
+                </a>
+                {% endif %}
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>

@@ -578,7 +578,7 @@
                             <h5>{{ proyecto.titulo }}</h5>
                             <p class="text-muted mb-2"><strong>Tipo:</strong> {{ proyecto.get_tipo_display }}</p>
                             <p class="mb-0">{{ proyecto.descripcion|truncatewords:25 }}</p>
-                            <a href="#" class="integrante-link mt-2 d-inline-block">Ver detalles →</a>
+                            <a href="{% url 'web_publica:proyecto_detalle' proyecto.pk %}" class="integrante-link mt-2 d-inline-block">Ver detalles →</a>
                         </div>
                     </div>
                 {% endfor %}

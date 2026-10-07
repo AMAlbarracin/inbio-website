@@ -395,32 +395,32 @@
     <div class="container">
         <div class="row text-center g-4">
             <div class="col-md-3 fade-in">
-                <div class="contador-item">
+                <a href="{% url 'web_publica:proyectos_investigacion' %}" class="contador-item d-block text-decoration-none">
                     <i class="fas fa-flask contador-icono"></i>
                     <h3 class="contador-numero" data-count="{{ contadores.proyectos }}">0</h3>
-                    <p class="contador-texto">Proyectos Activos</p>
-                </div>
+                    <p class="contador-texto">Proyectos de Investigacion</p>
+                </a>
             </div>
             <div class="col-md-3 fade-in">
-                <div class="contador-item">
+                <a href="{% url 'web_publica:publicaciones' %}" class="contador-item d-block text-decoration-none">
                     <i class="fas fa-file-alt contador-icono"></i>
                     <h3 class="contador-numero" data-count="{{ contadores.publicaciones }}">0</h3>
                     <p class="contador-texto">Publicaciones</p>
-                </div>
+                </a>
             </div>
             <div class="col-md-3 fade-in">
-                <div class="contador-item">
+                <a href="{% url 'web_publica:equipo' %}" class="contador-item d-block text-decoration-none">
                     <i class="fas fa-users contador-icono"></i>
                     <h3 class="contador-numero" data-count="{{ contadores.investigadores }}">0</h3>
                     <p class="contador-texto">Investigadores</p>
-                </div>
+                </a>
             </div>
             <div class="col-md-3 fade-in">
-                <div class="contador-item">
+                <a href="{% url 'web_publica:historia' %}" class="contador-item d-block text-decoration-none">
                     <i class="fas fa-calendar-alt contador-icono"></i>
                     <h3 class="contador-numero" data-count="{{ contadores.anios_trayectoria }}">0</h3>
                     <p class="contador-texto">Años de Trayectoria</p>
-                </div>
+                </a>
             </div>
         </div>
     </div>
@@ -490,6 +490,10 @@
         </div>
     </div>
 </section>
+
+<!-- 5. PROGRAMAS DE INVESTIGACION PILARES -->
+
+{% include 'web_publica/programas/_card_grid.html' %}
 
 <!-- 5. NOTICIAS CARRUSEL -->
 <section class="noticias-section">

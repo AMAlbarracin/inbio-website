@@ -59,12 +59,15 @@ def home_view(request):
     
     # Para el contador de noticias activas (opcional)
     contadores['noticias_activas'] = Noticia.objects.filter(activa=True).count()
+
+    programas_investigacion = ProgramaInvestigacion.objects.filter(activo=True)
     
     context = {
         'fechas_destacadas': fechas_destacadas,
         'miembros_directiva': miembros_directiva,
         'noticias_ultimas': noticias_ultimas,
         'contadores': contadores,
+        'programas_investigacion': programas_investigacion,
     }
     
     return render(request, 'web_publica/home.html', context)
@@ -189,11 +192,19 @@ def investigador_detalle_view(request, id):
         reverse=True
     )
 
+    # --- Proyectos asociados (como responsable, integrante o codirector) ---
+    proyectos = (
+        investigador.proyectos.all()
+        | investigador.proyectos_participantes.all()
+        | investigador.proyectos_codirigidos.all()
+    ).distinct()
+
     context = {
         'laboratorios_a_cargo': laboratorios_a_cargo,
         'laboratorios_integrantes': laboratorios_integrantes,
         "investigador": investigador,
         "publicaciones": publicaciones_finales,
+        "proyectos": proyectos,
     }
     return render(request, "web_publica/equipo/detalle_investigador.html", context)
 
@@ -736,7 +747,7 @@ def cargar_investigador_view(request):
 @user_passes_test(es_administrador_o_coordinador)
 def cargar_proyecto_view(request):
     if request.method == 'POST':
-        form = ProyectoForm(request.POST)
+        form = ProyectoForm(request.POST, request.FILES)
         if form.is_valid():
             proyecto = form.save()
             tipo = "Colaborativo" if proyecto.tipo == 'colaborativo' else "Investigación"
@@ -762,6 +773,11 @@ def proyectos_colaborativos_view(request):
     return render(request, 'web_publica/proyectos/colaborativos.html', {'proyectos': proyectos})
 
 
+def proyecto_detalle_view(request, pk):
+    proyecto = get_object_or_404(Proyecto, pk=pk, activo=True)
+    return render(request, 'web_publica/proyectos/detalle.html', {'proyecto': proyecto})
+
+
 from django.db.models import Count, Q
 from django.core.paginator import Paginator
 
@@ -772,13 +788,13 @@ def cargas_web_view(request):
     
     query = request.GET.get('q', '').strip()
     
-    # ===== 2. DEBUG (temporal para verificar, puedes quitarlo después) =====
+    # = 2. DEBUG (temporal para verificar, puedes quitarlo después) ==
     if query:
         print(f"\n{'='*50}")
         print(f"🔍 BÚSQUEDA ACTIVA: '{query}'")
         print(f"URL: {request.get_full_path()}")
         print(f"{'='*50}\n")
-    # =======================================================================
+    #================================================================
     
     
     # Dashboard de contadores
@@ -791,6 +807,7 @@ def cargas_web_view(request):
         'servicios': Servicio.objects.count(),
         'eventos': Evento.objects.filter(activo=True).count(),
         'proyectos': Proyecto.objects.filter(activo=True).count(),
+        'programas': ProgramaInvestigacion.objects.filter(activo=True).count(),
     }
     
     # Querysets con paginación
@@ -816,6 +833,9 @@ def cargas_web_view(request):
     
     proyectos_qs = Proyecto.objects.filter(activo=True).order_by('-fecha_inicio')
     proyectos = Paginator(proyectos_qs, 5).get_page(page_number)
+
+    programas_qs = ProgramaInvestigacion.objects.all().order_by('orden')
+    programas = Paginator(programas_qs, 5).get_page(page_number)
     
     # ===== 5. APLICAR FILTROS SOLO SI HAY BÚSQUEDA (NUEVO) =====
     if query:
@@ -838,6 +858,7 @@ def cargas_web_view(request):
             'servicios': servicios_qs.count(),
             'laboratorios': laboratorios_qs.count(),
             'proyectos': proyectos_qs.count(),
+            'programas': programas_qs.count(),
         })
         
     context = {
@@ -849,6 +870,7 @@ def cargas_web_view(request):
         'servicios': servicios,
         'eventos': eventos,
         'proyectos': proyectos,
+        'programas': programas
     }
     
     return render(request, 'web_publica/admin/cargas_web.html', context)
@@ -1092,7 +1114,7 @@ def eliminar_evento_view(request, pk):
         'cancel_url': 'web_publica:cargas_web'
     })
 
-# ==================== CRUD INVESTIGADORES (ya tienes, pero completo) ====================
+# ====== CRUD INVESTIGADORES (ya tienes, pero completo) ========
 @login_required
 @user_passes_test(es_administrador_o_coordinador)
 def editar_investigador_view(request, pk):
@@ -1134,7 +1156,7 @@ def eliminar_investigador_view(request, pk):
 def editar_proyecto_view(request, pk):
     proyecto = get_object_or_404(Proyecto, pk=pk)
     if request.method == 'POST':
-        form = ProyectoForm(request.POST, instance=proyecto)
+        form = ProyectoForm(request.POST, request.FILES, instance=proyecto)
         if form.is_valid():
             proyecto = form.save()
             messages.success(request, f'✅ Proyecto "{proyecto.titulo}" actualizado')
@@ -1302,3 +1324,85 @@ def sincronizar_publicaciones_scholar(investigador):
     except Exception as e:
         print("ERROR SCHOLAR:", e)
         return
+
+
+# =========RUD PROGRAMAS INVESTIGACION =============
+
+from .forms import ProgramaInvestigacionForm  # sumar al import existente
+
+# ====PROGRAMAS DE INVESTIGACIÓN — PÚBLICO ==========
+
+def programas_lista_view(request):
+    """Listado completo (por si querés una página propia además de la home)"""
+    programas = ProgramaInvestigacion.objects.filter(activo=True)
+    return render(request, 'web_publica/programas/lista.html', {'programas': programas})
+
+
+def programa_detalle_view(request, slug):
+    programa = get_object_or_404(ProgramaInvestigacion, slug=slug, activo=True)
+    proyectos_asociados = programa.proyectos_asociados.filter(activo=True)
+    otros_programas = ProgramaInvestigacion.objects.filter(activo=True).exclude(pk=programa.pk)[:3]
+    context = {
+        'programa': programa,
+        'proyectos_asociados': proyectos_asociados,
+        'otros_programas': otros_programas,
+    }
+    return render(request, 'web_publica/programas/detalle.html', context)
+
+
+# ==================== CRUD PROGRAMAS (mismo patrón que Noticias/Eventos) ====================
+
+@login_required
+@user_passes_test(es_administrador_o_coordinador)
+def cargar_programa_view(request):
+    if request.method == 'POST':
+        form = ProgramaInvestigacionForm(request.POST, request.FILES)
+        if form.is_valid():
+            programa = form.save()
+            messages.success(request, f'✅ Programa "{programa.titulo}" creado')
+            return redirect('web_publica:cargas_web')
+    else:
+        form = ProgramaInvestigacionForm()
+
+    return render(request, 'web_publica/forms/cargar_programa.html', {
+        'form': form,
+        'titulo': 'Cargar Programa de Investigación'
+    })
+
+
+@login_required
+@user_passes_test(es_administrador_o_coordinador)
+def editar_programa_view(request, pk):
+    programa = get_object_or_404(ProgramaInvestigacion, pk=pk)
+    if request.method == 'POST':
+        form = ProgramaInvestigacionForm(request.POST, request.FILES, instance=programa)
+        if form.is_valid():
+            form.save()
+            messages.success(request, f'✅ Programa "{programa.titulo}" actualizado')
+            return redirect('web_publica:cargas_web')
+    else:
+        form = ProgramaInvestigacionForm(instance=programa)
+
+    return render(request, 'web_publica/forms/editar_programa.html', {
+        'form': form,
+        'titulo': f'Editar Programa: {programa.titulo}',
+        'programa': programa,
+    })
+
+
+@login_required
+@user_passes_test(es_administrador_o_coordinador)
+def eliminar_programa_view(request, pk):
+    programa = get_object_or_404(ProgramaInvestigacion, pk=pk)
+    if request.method == 'POST':
+        titulo = programa.titulo
+        programa.delete()
+        messages.success(request, f'🗑️ Programa "{titulo}" eliminado')
+        return redirect('web_publica:cargas_web')
+
+    return render(request, 'web_publica/forms/eliminar_confirmar.html', {
+        'objeto': programa,
+        'tipo': 'Programa de Investigación',
+        'cancel_url': 'web_publica:cargas_web'
+    })
+

@@ -16,7 +16,8 @@
                 <div class="card-bio h-100 border-primary">
                     <div class="card-body">
                         <h5 class="card-title text-primary">
-                            <i class="fas fa-building me-2"></i>{{ proyecto.titulo }}
+                            <i class="fas fa-building me-2"></i>
+                            <a href="{% url 'web_publica:proyecto_detalle' proyecto.pk %}" class="text-decoration-none">{{ proyecto.titulo }}</a>
                         </h5>
                         <p class="card-text">{{ proyecto.descripcion|truncatewords:30 }}</p>
                         <div class="d-flex justify-content-between align-items-center">

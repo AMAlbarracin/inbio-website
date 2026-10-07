@@ -43,6 +43,7 @@ urlpatterns = [
     #Seccion Proyectos 
     path('proyectos-investigacion/', views.proyectos_investigacion_view, name='proyectos_investigacion'),
     path('proyectos-colaborativos/', views.proyectos_colaborativos_view, name='proyectos_colaborativos'),
+    path('proyectos/<int:pk>/', views.proyecto_detalle_view, name='proyecto_detalle'),
 
     # Seccion Login / Logout 
     path('login/', auth_views.LoginView.as_view(
@@ -89,6 +90,13 @@ urlpatterns = [
     path('eliminar-investigador/<int:pk>/', views.eliminar_investigador_view, name='eliminar_investigador'),
     path('eliminar-proyecto/<int:pk>/', views.eliminar_proyecto_view, name='eliminar_proyecto'),
     path('comentario/<int:pk>/eliminar/', views.eliminar_comentario, name='eliminar_comentario'),
+
+    # Seccion Programas de Investigación
+    path('programas/', views.programas_lista_view, name='programas'),
+    path('programas/cargar/', views.cargar_programa_view, name='cargar_programa'),
+    path('programas/<slug:slug>/', views.programa_detalle_view, name='programa_detalle'),
+    path('editar-programa/<int:pk>/', views.editar_programa_view, name='editar_programa'),
+    path('eliminar-programa/<int:pk>/', views.eliminar_programa_view, name='eliminar_programa'),
     
 ]
 

@@ -1,0 +1,105 @@
+{% extends 'web_publica/base_publica.html' %}
+{% load static %}
+
+{% block title %}{{ proyecto.titulo }} - INBIO{% endblock %}
+
+{% block content %}
+<style>
+.py-hero { padding:6rem 0 2rem; background:linear-gradient(160deg,#0a1930 0%,#0d213d 100%); }
+.py-badge { display:inline-block; background:rgba(79,195,247,.15); color:#4fc3f7; border:1px solid #1e3a6b;
+    padding:.35rem 1rem; border-radius:30px; font-size:.8rem; font-weight:600; margin-bottom:1rem; }
+.py-titulo { color:#fff; font-weight:800; font-size:2rem; max-width:800px; }
+.py-meta { color:#a9c0da; font-size:.95rem; margin-top:.5rem; }
+.py-imagen { width:100%; max-height:380px; object-fit:cover; border-radius:16px; margin-top:2rem;
+    border:1px solid #1e3a6b; }
+.py-body { padding:4rem 0 5rem; background:#0d213d; }
+.py-narrativa { display:grid; grid-template-columns:repeat(3,1fr); gap:1.5rem; margin-bottom:3rem; }
+.py-narrativa-item { background:#0f2547; border:1px solid #1e3a6b; border-radius:14px; padding:1.75rem;
+    position:relative; overflow:hidden; }
+.py-narrativa-item .num { position:absolute; right:.5rem; top:-.5rem; font-size:4rem; font-weight:800;
+    color:rgba(79,195,247,.08); }
+.py-narrativa-item h5 { color:#4fc3f7; font-size:1rem; font-weight:700; margin-bottom:.75rem; }
+.py-narrativa-item p { color:#e8f1fb; font-size:.9rem; line-height:1.6; margin:0; }
+.py-info-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:1rem; margin-bottom:2.5rem; }
+.py-info-item { background:#0f2547; border:1px solid #1e3a6b; border-radius:10px; padding:1rem 1.25rem; }
+.py-info-item span { display:block; color:#a9c0da; font-size:.75rem; text-transform:uppercase; margin-bottom:.25rem; }
+.py-info-item strong { color:#fff; font-size:.95rem; }
+.py-info-item a { color:#4fc3f7; }
+.py-descripcion { color:#e8f1fb; line-height:1.8; max-width:800px; }
+@media (max-width:768px){ .py-narrativa{grid-template-columns:1fr;} }
+</style>
+
+<section class="py-hero">
+    <div class="container">
+        <a href="{% if proyecto.tipo == 'colaborativo' %}{% url 'web_publica:proyectos_colaborativos' %}{% else %}{% url 'web_publica:proyectos_investigacion' %}{% endif %}"
+           class="btn btn-outline-light btn-sm mb-3">
+            <i class="fas fa-arrow-left me-1"></i> Volver a Proyectos
+        </a>
+        <div>
+            <span class="py-badge">{{ proyecto.get_estado_display }}</span>
+            {% if proyecto.tipo_financiamiento %}<span class="py-badge">{{ proyecto.get_tipo_financiamiento_display }}</span>{% endif %}
+        </div>
+        <h1 class="py-titulo">{{ proyecto.titulo }}</h1>
+        {% if proyecto.programa %}
+        <p class="py-meta">
+            <i class="fas fa-diagram-project me-1"></i>
+            <a href="{% url 'web_publica:programa_detalle' proyecto.programa.slug %}" style="color:#4fc3f7;">{{ proyecto.programa.titulo }}</a>
+        </p>
+        {% endif %}
+        {% if proyecto.imagen %}
+        <img src="{{ proyecto.imagen.url }}" class="py-imagen" alt="{{ proyecto.titulo }}">
+        {% endif %}
+    </div>
+</section>
+
+<section class="py-body">
+    <div class="container">
+        {% if proyecto.desafio or proyecto.innovacion or proyecto.impacto %}
+        <div class="py-narrativa">
+            {% if proyecto.desafio %}
+            <div class="py-narrativa-item"><span class="num">1</span><h5>El Desafío</h5><p>{{ proyecto.desafio }}</p></div>
+            {% endif %}
+            {% if proyecto.innovacion %}
+            <div class="py-narrativa-item"><span class="num">2</span><h5>La Innovación</h5><p>{{ proyecto.innovacion }}</p></div>
+            {% endif %}
+            {% if proyecto.impacto %}
+            <div class="py-narrativa-item"><span class="num">3</span><h5>El Impacto</h5><p>{{ proyecto.impacto }}</p></div>
+            {% endif %}
+        </div>
+        {% else %}
+        <p class="py-descripcion mb-4">{{ proyecto.descripcion|linebreaks }}</p>
+        {% endif %}
+
+        <div class="py-info-grid">
+            <div class="py-info-item">
+                <span>Director</span>
+                <strong><a href="{% url 'web_publica:investigador_detalle' proyecto.responsable.id %}">{{ proyecto.responsable.nombre_completo }}</a></strong>
+            </div>
+            {% if proyecto.codirector %}
+            <div class="py-info-item">
+                <span>Codirector</span>
+                <strong><a href="{% url 'web_publica:investigador_detalle' proyecto.codirector.id %}">{{ proyecto.codirector.nombre_completo }}</a></strong>
+            </div>
+            {% endif %}
+            <div class="py-info-item"><span>Inicio</span><strong>{{ proyecto.fecha_inicio|date:"Y" }}</strong></div>
+            <div class="py-info-item"><span>Finalización</span><strong>{{ proyecto.fecha_fin|date:"Y"|default:"En curso" }}</strong></div>
+        </div>
+
+        {% if proyecto.desafio %}<p class="py-descripcion mb-4">{{ proyecto.descripcion|linebreaks }}</p>{% endif %}
+
+        {% if proyecto.integrantes.all %}
+        <h5 style="color:#fff;">Equipo</h5>
+        <p class="py-meta">
+            {% for i in proyecto.integrantes.all %}<a href="{% url 'web_publica:investigador_detalle' i.id %}" style="color:#4fc3f7;">{{ i.nombre_completo }}</a>{% if not forloop.last %}, {% endif %}{% endfor %}
+        </p>
+        {% endif %}
+
+        {% if proyecto.laboratorios.all %}
+        <h5 style="color:#fff; margin-top:1.5rem;">Laboratorios involucrados</h5>
+        <p class="py-meta">
+            {% for lab in proyecto.laboratorios.all %}<a href="{% url 'web_publica:laboratorio_detalle' lab.pk %}" style="color:#4fc3f7;">{{ lab.nombre }}</a>{% if not forloop.last %}, {% endif %}{% endfor %}
+        </p>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}

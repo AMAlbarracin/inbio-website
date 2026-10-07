@@ -1,0 +1,66 @@
+{% extends 'web_publica/base_publica.html' %}
+{% load static %}
+
+{% block title %}Programas de Investigación - INBIO{% endblock %}
+
+{% block content %}
+<style>
+.programas-lista-hero {
+    padding: 6rem 0 3rem;
+    background: linear-gradient(160deg, #0a1930 0%, #0d213d 100%);
+    text-align: center;
+}
+.programas-lista-hero h1 { color:#fff; font-weight:800; font-size:2.2rem; }
+.programas-lista-hero p { color:#a9c0da; max-width:600px; margin:0.5rem auto 0; }
+.programas-lista-body { padding: 4rem 0 5rem; background:#0d213d; }
+.programas-lista-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 2rem;
+    max-width: 1000px;
+    margin: 0 auto;
+}
+.programa-lista-card {
+    display: block;
+    background: #0f2547;
+    border: 1px solid #1e3a6b;
+    border-radius: 16px;
+    padding: 2.5rem 2rem;
+    text-align: center;
+    text-decoration: none;
+    transition: all .25s ease;
+}
+.programa-lista-card:hover {
+    transform: translateY(-8px);
+    border-color: #4fc3f7;
+    box-shadow: 0 15px 35px rgba(0,0,0,0.35);
+}
+.programa-lista-card i { font-size: 2.8rem; color:#4fc3f7; margin-bottom:1.25rem; display:block; }
+.programa-lista-card h4 { color:#fff; margin-bottom:.75rem; }
+.programa-lista-card p { color:#a9c0da; font-size:.9rem; margin:0; }
+@media (max-width:768px) { .programas-lista-grid { grid-template-columns: 1fr; } }
+</style>
+
+<section class="programas-lista-hero">
+    <div class="container">
+        <h1>Programas de Investigación</h1>
+        <p>Res. 167/2024 CD — Las cuatro áreas estratégicas que estructuran la investigación del INBIO.</p>
+    </div>
+</section>
+
+<section class="programas-lista-body">
+    <div class="container">
+        <div class="programas-lista-grid">
+            {% for programa in programas %}
+            <a href="{% url 'web_publica:programa_detalle' programa.slug %}" class="programa-lista-card">
+                <i class="fas {{ programa.icono }}"></i>
+                <h4>{{ programa.titulo }}</h4>
+                <p>{{ programa.resumen_corto }}</p>
+            </a>
+            {% empty %}
+            <p style="color:#a9c0da; text-align:center; grid-column:1/-1;">No hay programas cargados todavía.</p>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endblock %}

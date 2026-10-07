@@ -251,7 +251,8 @@ class ProyectoForm(forms.ModelForm):
     class Meta:
         model = Proyecto
         fields = ['titulo', 'descripcion', 'tipo', 'fecha_inicio', 'fecha_fin', 
-                  'estado', 'responsable', 'integrantes', 'laboratorios','activo']
+                  'estado', 'responsable', 'codirector', 'integrantes', 'laboratorios', 'programa',
+                  'tipo_financiamiento', 'desafio', 'innovacion', 'impacto', 'imagen', 'activo']
         widgets = {
             'titulo': forms.TextInput(attrs={'class': 'form-control'}),
             'descripcion': forms.Textarea(attrs={'class': 'form-control', 'rows': 4}),
@@ -261,9 +262,23 @@ class ProyectoForm(forms.ModelForm):
             'estado': forms.Select(attrs={'class': 'form-select'}),
             'responsable': forms.Select(attrs={'class': 'form-select'}),
             'integrantes': forms.SelectMultiple(attrs={'class': 'form-select'}),
-            'laboratorios': forms.SelectMultiple(attrs={'class': 'form-select'}),               
+            'laboratorios': forms.SelectMultiple(attrs={'class': 'form-select'}),
+            'programa': forms.Select(attrs={'class': 'form-select'}),
+            'codirector': forms.Select(attrs={'class': 'form-select'}),
+            'tipo_financiamiento': forms.Select(attrs={'class': 'form-select'}),
+            'desafio': forms.Textarea(attrs={'class': 'form-control', 'rows': 3, 'placeholder': '¿Qué problema u oportunidad aborda?'}),
+            'innovacion': forms.Textarea(attrs={'class': 'form-control', 'rows': 3, 'placeholder': '¿Qué se hace de forma novedosa?'}),
+            'impacto': forms.Textarea(attrs={'class': 'form-control', 'rows': 3, 'placeholder': '¿Qué resultado/beneficio concreto se espera?'}),
+            'imagen': forms.FileInput(attrs={'class': 'form-control'}),
             'activo': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
         }
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['programa'].required = False
+        self.fields['fecha_fin'].required = False
+        self.fields['codirector'].required = False
+
+
         
 # ---------------------------------------------------
 # INLINE FORMSET → Equipamientos dentro del laboratorio
@@ -277,3 +292,27 @@ EquipamientoFormset = inlineformset_factory(
     can_delete=True,   # permitir borrar equipamientos
 )
       
+# ---------------------------------------------------
+# PROGRAMAS DE INVESTIGACION 
+# ---------------------------------------------------
+
+from .models import ProgramaInvestigacion
+
+class ProgramaInvestigacionForm(forms.ModelForm):
+    class Meta:
+        model = ProgramaInvestigacion
+        fields = ['titulo', 'resumen_corto', 'icono', 'descripcion_completa', 'puntos_clave',
+                  'imagen_banner', 'resolucion', 'orden', 'activo']
+        widgets = {
+            'titulo': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Ej: Procesamiento de Datos Biomédicos'}),
+            'resumen_corto': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Frase corta para la tarjeta (máx 200 caracteres)'}),
+            'icono': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'fa-brain'}),
+            'descripcion_completa': forms.Textarea(attrs={'class': 'form-control', 'rows': 5, 'placeholder': 'Párrafo introductorio del programa'}),
+            'puntos_clave': forms.Textarea(attrs={'class': 'form-control', 'rows': 6, 'placeholder': 'Un ítem por línea. Ej:\nTecnología para diagnóstico\nTecnología para tratamiento\nTecnología para rehabilitación'}),
+            'imagen_banner': forms.FileInput(attrs={'class': 'form-control'}),
+            'resolucion': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Res. 167/2024 CD'}),
+            'orden': forms.NumberInput(attrs={'class': 'form-control', 'min': 0}),
+            'activo': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
+        }
+
+        

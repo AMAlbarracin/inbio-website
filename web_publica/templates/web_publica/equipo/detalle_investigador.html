@@ -298,17 +298,17 @@
                     </div>
                     {% endif %}
 
-                    <!-- Proyectos donde es responsable -->
-                    {% if proyectos.all %}
+                    <!-- Proyectos donde participa -->
+                    {% if proyectos %}
                     <div class="mb-3">
-                        <p class="fw-bold mb-1">Proyectos donde es responsable:</p>
+                        <p class="fw-bold mb-1">Proyectos:</p>
                         <ul>
-                            {% for proyecto in proyectos.all %}
-                                <li>{{ proyecto.titulo }}</li>
+                            {% for proyecto in proyectos %}
+                                <li><a href="{% url 'web_publica:proyecto_detalle' proyecto.pk %}">{{ proyecto.titulo }}</a></li>
                             {% endfor %}
                         </ul>
                     </div>
-                    {% endif %}                
+                    {% endif %}               
 
                 </div>
             </div>
@@ -388,9 +388,19 @@
                 {% endif %}
 
                 <!-- PROYECTOS -->
-                {% if investigador.proyectos %}
-                <div class="tab-content" id="proyectos">                    
-                    <p>{{ investigador.proyectos|linebreaks }}</p>
+                {% if proyectos %}
+                <div class="tab-content" id="proyectos">
+                    {% for proyecto in proyectos %}
+                        <div class="list-item">
+                            <strong><a href="{% url 'web_publica:proyecto_detalle' proyecto.pk %}">{{ proyecto.titulo }}</a></strong>
+                            <br><span class="text-muted">{{ proyecto.get_estado_display }} · {{ proyecto.fecha_inicio|date:"Y" }}</span>
+                            {% if proyecto.programa %}
+                            <br><a href="{% url 'web_publica:programa_detalle' proyecto.programa.slug %}" class="text-muted">
+                                <i class="fas fa-diagram-project me-1"></i>{{ proyecto.programa.titulo }}
+                            </a>
+                            {% endif %}
+                        </div>
+                    {% endfor %}
                 </div>
                 {% endif %}
 

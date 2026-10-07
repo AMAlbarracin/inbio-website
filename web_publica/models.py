@@ -454,8 +454,35 @@ class Proyecto(models.Model):
     laboratorios = models.ManyToManyField(
         Laboratorio, 
         blank=True, 
-        related_name='proyectos_asociados'
+        related_name='proyectos_asociados'    )
+
+    programa = models.ForeignKey(
+        'ProgramaInvestigacion',
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='proyectos_asociados',
+        help_text="Programa de Investigación al que pertenece este proyecto."
     )
+
+    FINANCIAMIENTO_CHOICES = [
+        ('PIC_CICITCA', 'PIC - CICITCA'),
+        ('PDTS', 'PDTS'),
+        ('OTRO', 'Otro / Sin financiamiento externo'),
+    ]
+    tipo_financiamiento = models.CharField(max_length=20, choices=FINANCIAMIENTO_CHOICES, blank=True)
+
+    codirector = models.ForeignKey(
+        'Investigador', on_delete=models.SET_NULL, null=True, blank=True,
+        related_name='proyectos_codirigidos',
+        help_text="Cotitular / Codirector del proyecto (opcional)."
+    )
+
+    desafio = models.TextField(blank=True, help_text="El problema u oportunidad que motiva el proyecto.")
+    innovacion = models.TextField(blank=True, help_text="Qué se hace de forma novedosa para resolverlo.")
+    impacto = models.TextField(blank=True, help_text="El resultado o beneficio concreto esperado.")
+
+    imagen = models.ImageField(upload_to='proyectos/', blank=True, help_text="Imagen representativa del proyecto.")
 
     activo = models.BooleanField(default=True)
     
@@ -473,4 +500,72 @@ class Proyecto(models.Model):
             return (self.fecha_fin.year - self.fecha_inicio.year) * 12 + (self.fecha_fin.month - self.fecha_inicio.month)
         return "En curso"
     
+# ============================================================
+# 11) PROGRAMAS DE INVESTIGACION
+# ============================================================    
+
+from django.utils.text import slugify
+
+class ProgramaInvestigacion(models.Model):
+    """Programas de Investigación del INBIO (Res. 167/2024 CD y las que sigan)"""
+
+    titulo = models.CharField(max_length=150)
+    slug = models.SlugField(max_length=170, unique=True, blank=True)
+
+    # Para la tarjeta en la home
+    resumen_corto = models.CharField(
+        max_length=200,
+        help_text="Frase corta que aparece debajo del título en la tarjeta (2 líneas aprox)."
+    )
+    icono = models.CharField(
+        max_length=50,
+        help_text="Clase de FontAwesome, ej: fa-microchip, fa-brain, fa-hard-hat, fa-graduation-cap"
+    )
+
+    # Para la pantalla de detalle
+    descripcion_completa = models.TextField(
+        help_text="Párrafo introductorio del programa (lo que va arriba de la lista de puntos)."
+    )
+    puntos_clave = models.TextField(
+        blank=True,
+        help_text="Sub-áreas o ítems que abarca el programa. Uno por línea. Ej: Tecnología para diagnóstico"
+    )
+    imagen_banner = models.ImageField(
+        upload_to='programas/',
+        blank=True,
+        help_text="Imagen opcional para la cabecera de la pantalla de detalle."
+    )
+
+    resolucion = models.CharField(
+        max_length=100,
+        blank=True,
+        help_text="Ej: Res. 167/2024 CD (opcional, referencia normativa del programa)."
+    )
+
+    orden = models.IntegerField(default=0, help_text="Controla el orden de las tarjetas en la home.")
+    activo = models.BooleanField(default=True)
+    fecha_creacion = models.DateTimeField(auto_now_add=True)
+    fecha_actualizacion = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ['orden', 'titulo']
+        verbose_name = "Programa de Investigación"
+        verbose_name_plural = "Programas de Investigación"
+
+    def __str__(self):
+        return self.titulo
+
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            base_slug = slugify(self.titulo)
+            slug = base_slug
+            i = 1
+            while ProgramaInvestigacion.objects.filter(slug=slug).exclude(pk=self.pk).exists():
+                i += 1
+                slug = f"{base_slug}-{i}"
+            self.slug = slug
+        super().save(*args, **kwargs)
+
+    def get_puntos_clave_list(self):
+            return [p.strip() for p in self.puntos_clave.split('\n') if p.strip()]
     

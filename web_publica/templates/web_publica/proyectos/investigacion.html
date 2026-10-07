@@ -15,7 +15,9 @@
             <div class="col-lg-6">
                 <div class="card-bio h-100">
                     <div class="card-body">
-                        <h5 class="card-title text-primary">{{ proyecto.titulo }}</h5>
+                        <h5 class="card-title text-primary">
+                            <a href="{% url 'web_publica:proyecto_detalle' proyecto.pk %}" class="text-decoration-none">{{ proyecto.titulo }}</a>
+                        </h5>
                         <p class="card-text">{{ proyecto.descripcion|truncatewords:30 }}</p>
                         
                         <div class="d-flex justify-content-between align-items-center mb-3">
